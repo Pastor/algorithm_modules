@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <plugin_module.h>
+#include <plugin_api.h>
 
 
 TEST(ModuleContext, Properties) {
