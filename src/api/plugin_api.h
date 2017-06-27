@@ -1,18 +1,36 @@
 #ifndef ALGORITHM_PLUGIN_API_H
 #define ALGORITHM_PLUGIN_API_H
+
 #include <string>
 #include <memory>
 #include <map>
 #include <plugin_spec.h>
 
+#if defined(EXPORT_LIBRARY)
+#define LIBRARY_API __declspec(dllexport)
+#else
+#define LIBRARY_API __declspec(dllimport)
+#endif
+
 class ModuleContext {
     std::map<std::string, std::string> _properties;
+    std::shared_ptr<ModuleContext> _parent;
 public:
+    ModuleContext();
+
+    ModuleContext(std::shared_ptr<ModuleContext> parent);
+
+    virtual ~ModuleContext() {}
+
     virtual const std::string &property(const std::string &key);
+
     virtual void set_property(const std::string &key, const std::string &value);
 
     int int_value(const std::string &key);
+
     bool bool_value(const std::string &key);
+
+    virtual bool is_database_context() const { return false; }
 
     operator bool() const;
 };
@@ -20,6 +38,7 @@ public:
 class Module {
 public:
     Module() {}
+
     virtual ~Module() {}
 
     virtual const PluginSpec &spec() const = 0;
@@ -27,10 +46,12 @@ public:
     virtual bool execute(std::shared_ptr<ModuleContext> context) = 0;
 };
 
-class ScriptModule: public Module {
+class ScriptModule : public Module {
 public:
     ScriptModule(const PluginSpec &spec);
+
     ScriptModule(const std::string name, const std::string &description, double version);
+
     virtual ~ScriptModule() {}
 
     virtual const PluginSpec &spec() const {
@@ -38,7 +59,7 @@ public:
     }
 
 private:
-    PluginSpec   _spec;
+    PluginSpec _spec;
 };
 
 #endif //ALGORITHM_PLUGIN_API_H

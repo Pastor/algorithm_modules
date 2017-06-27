@@ -32,6 +32,7 @@ link_directories(${PYTHON_LIBRARY})
 include_directories(src)
 include_directories(src/api)
 include_directories(src/manager)
+include_directories(src/db_context)
 include_directories(lib/sqlite)
 include_directories(lib/tinyxml2)
 include_directories(lib/googletest/googletest/include)
@@ -39,6 +40,7 @@ add_subdirectory(lib/googletest/googletest)
 add_subdirectory(lib/sqlite)
 add_subdirectory(src/api)
 add_subdirectory(src/manager)
+add_subdirectory(src/db_context)
 
 set(ALGORITHM_SOURCE_FILES src/app/main.cpp)
 set(COMMON_SOURCE_FILES    lib/tinyxml2/tinyxml2.cpp)
@@ -47,13 +49,16 @@ set(TESTS_SOURCE_FILES
         tests/module_context_test.cpp
         tests/dynamic_module_test.cpp
         tests/plugin_spec_test.cpp
+        tests/postgresql_context_test.cpp
+        tests/sqlite_context_test.cpp
         tests/module_manager_test.cpp)
 
 add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES} ${COMMON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY_RELEASE} api manager)
 
 add_executable(${PROJECT_NAME}_tests ${TESTS_SOURCE_FILES} ${COMMON_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main ${PYTHON_LIBRARY_RELEASE} api manager)
+target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main ${PYTHON_LIBRARY_RELEASE}
+        api manager postgresql_context sqlite_context)
 
 add_library(dynamic_module_library SHARED tests/dynamic_module_library.cpp)
 target_link_libraries(dynamic_module_library api)

@@ -13,7 +13,10 @@ ScriptModule::ScriptModule(const PluginSpec &spec)
 
 const std::string &
 ModuleContext::property(const std::string &key) {
-    return _properties[key];
+    auto find = _properties.find(key);
+    if (find == _properties.end() && _parent)
+        return _parent->property(key);
+    return (*find).second;
 }
 
 void
@@ -33,4 +36,11 @@ ModuleContext::bool_value(const std::string &key) {
 
 ModuleContext::operator bool() const {
     return true;
+}
+
+ModuleContext::ModuleContext() {
+}
+
+ModuleContext::ModuleContext(std::shared_ptr<ModuleContext> parent)
+        : _parent(parent) {
 }
