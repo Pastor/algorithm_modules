@@ -4,9 +4,17 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <cmath>
 #include <thread>
+
+#if defined(_DEBUG)
+#undef _DEBUG
+
 #include <Python.h>
+
+#define _DEBUG
+#else
+#include <Python.h>
+#endif
 
 #include <python_plugin_module.h>
 
@@ -41,107 +49,6 @@ static bool execute(const std::string content, std::shared_ptr<ModuleContext> co
 }
 
 struct PythonScriptModulePrivate final {
-    struct Lock {
-        Lock() {
-            PyEval_AcquireLock();
-        }
-
-        ~Lock() {
-            PyEval_ReleaseLock();
-        }
-    };
-
-    struct RestoreState {
-        RestoreState() {
-            _ts = PyThreadState_Get();
-        }
-
-        ~RestoreState() {
-            PyThreadState_Swap(_ts);
-        }
-
-    private:
-        PyThreadState *_ts;
-    };
-
-    struct SwapState {
-        SwapState(PyThreadState *ts) {
-            _ts = PyThreadState_Swap(ts);
-        }
-
-        ~SwapState() {
-            PyThreadState_Swap(_ts);
-        }
-
-    private:
-        PyThreadState *_ts;
-    };
-
-    struct ThreadState {
-        ThreadState(PyInterpreterState *interp) {
-            _ts = PyThreadState_New(interp);
-        }
-
-        ~ThreadState() {
-            if (_ts) {
-                PyThreadState_Clear(_ts);
-                PyThreadState_Delete(_ts);
-
-                _ts = nullptr;
-            }
-        }
-
-        operator PyThreadState *() {
-            return _ts;
-        }
-
-    private:
-        PyThreadState *_ts;
-    };
-
-    struct Interpreter {
-        struct Thread {
-            Lock _lock;
-            ThreadState _state;
-            SwapState _swap;
-
-            Thread(PyInterpreterState *interp) : _state(interp), _swap(_state) {}
-        };
-
-        Interpreter() {
-            RestoreState restore;
-
-            _ts = Py_NewInterpreter();
-        }
-
-        ~Interpreter() {
-            if (_ts) {
-                SwapState swap_state(_ts);
-                Py_EndInterpreter(_ts);
-            }
-        }
-
-        PyInterpreterState *interp() {
-            return _ts->interp;
-        }
-
-    private:
-        PyThreadState *_ts;
-    };
-
-    struct EnableThread {
-        EnableThread() {
-            _state = PyEval_SaveThread();
-        }
-
-        ~EnableThread() {
-            PyEval_RestoreThread(_state);
-        }
-
-    private:
-        PyThreadState *_state;
-    };
-
     PythonScriptModulePrivate(const std::string &content) : _content(content) {}
 
     bool execute(std::shared_ptr<ModuleContext> context) {
@@ -152,25 +59,15 @@ struct PythonScriptModulePrivate final {
         return ret;
     }
 
-//    bool execute_thread(const std::string &content) {
-//        Interpreter interpreter;
-//
-//        std::thread exec(execute_in_thread, interpreter.interp(), content);
-//        EnableThread enable;
-//        exec.join();
-//        return true;
-//    }
 private:
-//    static void execute_in_thread(PyInterpreterState *interp, const std::string &content) {
-//        Interpreter::Thread scope(interp);
-//
-//        ::execute(content);
-//    }
     const std::string _content;
 };
 
-PythonScriptModule::PythonScriptModule(const std::string &content, const std::string &name, double version)
-        : ScriptModule(name, version), d(new PythonScriptModulePrivate(content)) {
+PythonScriptModule::PythonScriptModule(const std::string &content,
+                                       const std::string &name,
+                                       const std::string &description,
+                                       double version)
+        : ScriptModule(name, description, version), d(new PythonScriptModulePrivate(content)) {
     if (!Py_IsInitialized()) {
         Py_Initialize();
         PyEval_InitThreads();
@@ -186,12 +83,15 @@ PythonScriptModule::execute(std::shared_ptr<ModuleContext> context) {
     return d->execute(context);
 }
 
-PythonFileScriptModule::PythonFileScriptModule(const std::string &file_name, const std::string &name, double version)
-        : ScriptModule(name, version) {
+PythonFileScriptModule::PythonFileScriptModule(const std::string &file_name,
+                                               const std::string &name,
+                                               const std::string &description,
+                                               double version)
+        : ScriptModule(name, description, version) {
     std::ifstream script(file_name, std::ios_base::in);
     if (script.is_open()) {
         auto content = std::string(std::istreambuf_iterator<char>(script), std::istreambuf_iterator<char>());
-        d = std::shared_ptr<PythonScriptModule>(new PythonScriptModule(content, name, version));
+        d = std::shared_ptr<PythonScriptModule>(new PythonScriptModule(content, name, description, version));
         script.close();
     } else {
         fprintf(stderr, "Script %s can't read\n", file_name.c_str());

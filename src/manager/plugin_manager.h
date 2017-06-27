@@ -4,15 +4,20 @@
 #include <memory>
 #include <map>
 #include <plugin_api.h>
+#include <plugin_spec.h>
 
-class PluginManagerPrivate;
+struct PluginManagerPrivate;
 
 class PluginManager {
 public:
     PluginManager();
+
+    void load(const std::string &file_name);
+
+    void register_module(const PluginSpec &spec);
     void register_module(std::shared_ptr<Module> module);
     void register_dynamic(const std::string &file_name);
-    void register_script(const std::string &name, double version, const std::string &file_name);
+    void register_script(const std::string &name, const std::string &description, double version, const std::string &file_name);
 
     void execute(const std::string &name, std::shared_ptr<ModuleContext> context);
     bool contains(const std::string &name) const;

@@ -4,7 +4,7 @@
 #include <memory>
 #include <plugin_api.h>
 
-class DynamicLibraryModulePrivate;
+struct DynamicLibraryModulePrivate;
 
 class DynamicLibraryModule final: public Module {
 public:
@@ -14,8 +14,7 @@ public:
     bool execute(std::shared_ptr<ModuleContext> context) override ;
     bool is_loaded() const;
 
-    std::string name() const override;
-    double version() const override;
+    virtual const PluginSpec &spec() const;
 private:
     std::shared_ptr<DynamicLibraryModulePrivate> d;
 };

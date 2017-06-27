@@ -2,17 +2,17 @@
 #include <dynamic_library_module.h>
 
 extern "C" {
-bool
+__declspec(dllexport) bool
 plugin_call(ModuleContext *context) {
     return true;
 }
 
-const char *
+__declspec(dllexport) const char *
 plugin_name() {
     return "dynamic_module_library";
 }
 
-double
+__declspec(dllexport) double
 plugin_version() {
     return 1.02;
 }

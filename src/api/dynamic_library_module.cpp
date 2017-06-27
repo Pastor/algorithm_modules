@@ -14,6 +14,11 @@ struct DynamicLibraryModulePrivate {
             plugin_name = (plugin_name_fun)GetProcAddress(h_library, "plugin_name");
             plugin_call = (plugin_call_fun)GetProcAddress(h_library, "plugin_call");
             plugin_version = (plugin_version_fun)GetProcAddress(h_library, "plugin_version");
+
+            _spec.plugin_version = version();
+            _spec.plugin_type = PluginSpec::DynamicLibrary;
+            _spec.plugin_name = name();
+            _spec.plugin_file_path = library_path;
         }
     }
 
@@ -39,16 +44,22 @@ struct DynamicLibraryModulePrivate {
     }
 
     bool execute(std::shared_ptr<ModuleContext> context) {
-        if (plugin_call != nullptr && *context) {
+        if (plugin_call != nullptr && context) {
             return (*plugin_call)(context.get());
         }
         return false;
     }
+
+    const PluginSpec &spec() const {
+        return _spec;
+    }
+
 private:
     HMODULE h_library = nullptr;
     plugin_call_fun    plugin_call = nullptr;
     plugin_name_fun    plugin_name = nullptr;
     plugin_version_fun plugin_version = nullptr;
+    PluginSpec         _spec;
 };
 
 
@@ -69,12 +80,7 @@ DynamicLibraryModule::is_loaded() const {
     return d->is_loaded();
 }
 
-std::string
-DynamicLibraryModule::name() const {
-    return d->name();
-}
-
-double
-DynamicLibraryModule::version() const {
-    return d->version();
+const PluginSpec &
+DynamicLibraryModule::spec() const {
+    return d->spec();
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <PluginSpecs>
+        <PluginSpec>
+            <Name>TestDynamic</Name>
+            <FilePath>dynamic_module_library.dll</FilePath>
+            <Description>Динамическая библиотека(тестовая)</Description>
+            <Version>1.02</Version>
+            <Type>DynamicLibrary</Type>
+        </PluginSpec>
+    </PluginSpecs>
+</Configuration>

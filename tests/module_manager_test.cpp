@@ -1,12 +1,32 @@
 #include <gtest/gtest.h>
 #include <plugin_manager.h>
 #include <dynamic_library_module.h>
+#include "tests.h"
 
-
-TEST(PluginManager, Register) {
+TEST(PluginManager, RegisterModule) {
     PluginManager manager;
-    auto module = std::shared_ptr<Module>(new DynamicLibraryModule("libdynamic_module_library.dll"));
+    auto module = std::shared_ptr<Module>(new DynamicLibraryModule(library));
 
     manager.register_module(module);
+    ASSERT_TRUE(manager.contains("dynamic_module_library"));
+}
+
+TEST(PluginManager, RegisterSpec) {
+    PluginManager manager;
+    PluginSpec spec;
+
+    spec.plugin_name = "TestDynamic";
+    spec.plugin_file_path = "dynamic_module_library.dll";
+    spec.plugin_description = "Динамическая библиотека(тестовая)";
+    spec.plugin_version = 1.02;
+    spec.plugin_type = PluginSpec::DynamicLibrary;
+    manager.register_module(spec);
+    ASSERT_TRUE(manager.contains("dynamic_module_library"));
+}
+
+TEST(PluginManager, Load) {
+    PluginManager manager;
+
+    manager.load(configuration_file);
     ASSERT_TRUE(manager.contains("dynamic_module_library"));
 }

@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-set(SOURCE_FILES plugin_manager.cpp)
+set(SOURCE_FILES plugin_manager.cpp plugin_spec.cpp)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} api sqlite)
+add_library(manager STATIC ${SOURCE_FILES})

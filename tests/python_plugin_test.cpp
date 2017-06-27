@@ -9,7 +9,7 @@ TEST(PythonModule, ScriptModule) {
 }
 
 TEST(PythonModule, FileModule) {
-    PythonFileScriptModule module("scripts/plugin.01.py");
+    PythonFileScriptModule module("tests_data/plugin.01.py");
 
     ASSERT_TRUE(module.execute(std::shared_ptr<ModuleContext>(nullptr)));
 }

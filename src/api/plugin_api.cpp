@@ -1,8 +1,15 @@
 #include <string>
 #include <plugin_api.h>
 
-ScriptModule::ScriptModule(const std::string name, double version)
-: _name(name), _version(version){}
+ScriptModule::ScriptModule(const std::string name, const std::string &description, double version) {
+    _spec.plugin_name = name;
+    _spec.plugin_type = PluginSpec::PythonScript;
+    _spec.plugin_description = description;
+    _spec.plugin_version = version;
+}
+
+ScriptModule::ScriptModule(const PluginSpec &spec)
+        : _spec(spec) {}
 
 const std::string &
 ModuleContext::property(const std::string &key) {

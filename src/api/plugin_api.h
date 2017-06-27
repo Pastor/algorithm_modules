@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <plugin_spec.h>
 
 class ModuleContext {
     std::map<std::string, std::string> _properties;
@@ -21,27 +22,23 @@ public:
     Module() {}
     virtual ~Module() {}
 
-    virtual std::string name() const = 0;
-    virtual double version() const = 0;
+    virtual const PluginSpec &spec() const = 0;
 
     virtual bool execute(std::shared_ptr<ModuleContext> context) = 0;
 };
 
 class ScriptModule: public Module {
 public:
-    ScriptModule(const std::string name, double version);
+    ScriptModule(const PluginSpec &spec);
+    ScriptModule(const std::string name, const std::string &description, double version);
     virtual ~ScriptModule() {}
 
-    std::string name() const override {
-        return _name;
-    }
-    double version() const override {
-        return _version;
+    virtual const PluginSpec &spec() const {
+        return _spec;
     }
 
 private:
-    const std::string _name;
-    double _version;
+    PluginSpec   _spec;
 };
 
 #endif //ALGORITHM_PLUGIN_API_H

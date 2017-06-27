@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 #include <plugin_api.h>
 #include <dynamic_library_module.h>
-
-const std::string library = "libdynamic_module_library.dll";
+#include "tests.h"
 
 TEST(DynamicLibraryModule, Loaded) {
     DynamicLibraryModule module(library);
@@ -14,13 +13,13 @@ TEST(DynamicLibraryModule, Loaded) {
 TEST(DynamicLibraryModule, Name) {
     DynamicLibraryModule module(library);
 
-    ASSERT_STREQ(module.name().c_str(), "dynamic_module_library");
+    ASSERT_STREQ(module.spec().plugin_name.c_str(), "dynamic_module_library");
 }
 
 TEST(DynamicLibraryModule, Version) {
     DynamicLibraryModule module(library);
 
-    ASSERT_EQ(module.version(), 1.02);
+    ASSERT_DOUBLE_EQ(module.spec().plugin_version, 1.02);
 }
 
 
