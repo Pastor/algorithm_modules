@@ -6,13 +6,7 @@
 #include <map>
 #include <plugin_spec.h>
 
-#if defined(EXPORT_LIBRARY)
-#define LIBRARY_API __declspec(dllexport)
-#else
-#define LIBRARY_API __declspec(dllimport)
-#endif
-
-class ModuleContext {
+class LIBRARY_API ModuleContext {
     std::map<std::string, std::string> _properties;
     std::shared_ptr<ModuleContext> _parent;
 public:
@@ -35,7 +29,7 @@ public:
     operator bool() const;
 };
 
-class Module {
+class LIBRARY_API Module {
 public:
     Module() {}
 
@@ -46,7 +40,7 @@ public:
     virtual bool execute(std::shared_ptr<ModuleContext> context) = 0;
 };
 
-class ScriptModule : public Module {
+class LIBRARY_API ScriptModule : public Module {
 public:
     ScriptModule(const PluginSpec &spec);
 

@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.8)
+project(plugin_python)
+
+set(CMAKE_CXX_STANDARD 17)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+if (MSVC)
+    find_package(PythonLibs REQUIRED)
+    set(PYTHON_LIBRARY "")
+elseif (CMAKE_COMPILER_IS_GNUCXX)
+    set(PYTHON_INCLUDE_DIR D:/msys64/mingw64/include/python2.7)
+    set(PYTHON_LIBRARY D:/msys64/mingw64/lib/python2.7)
+    set(PYTHON_LIBRARY_RELEASE -lpython2.7.dll)
+endif ()
+message(STATUS "Python. Include  : ${PYTHON_INCLUDE_DIR}")
+message(STATUS "Python. Libs     : ${PYTHON_LIBRARY}")
+message(STATUS "Python. Libraries: ${PYTHON_LIBRARIES}")
+include_directories(${PYTHON_INCLUDE_DIR})
+link_directories(${PYTHON_LIBRARY})
+
+add_definitions(-DEXPORT_PYTHON_LIBRARY)
+set(SOURCE_FILES python_plugin_module.cpp)
+
+add_library(plugin_python SHARED ${SOURCE_FILES} )
+target_link_libraries(plugin_python ${PYTHON_LIBRARY_RELEASE} plugin_api)

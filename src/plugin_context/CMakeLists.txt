@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(db_context)
+project(plugin_context)
 
 find_package(PostgreSQL REQUIRED)
 
@@ -15,5 +15,5 @@ set(SQLITE_SOURCE_FILES sqlite_context.cpp sql_context.cpp)
 
 add_library(postgresql_context SHARED ${POSTGRESQL_SOURCE_FILES})
 add_library(sqlite_context SHARED ${SQLITE_SOURCE_FILES})
-target_link_libraries(postgresql_context api ${PostgreSQL_LIBRARIES})
-target_link_libraries(sqlite_context api sqlite)
+target_link_libraries(postgresql_context plugin_api ${PostgreSQL_LIBRARIES})
+target_link_libraries(sqlite_context plugin_api sqlite)

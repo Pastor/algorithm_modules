@@ -3,10 +3,6 @@
 
 #include <plugin_api.h>
 
-class LIBRARY_API SqlStatement {
-
-};
-
 class LIBRARY_API SqlContext : public ModuleContext {
 public:
     enum Type {

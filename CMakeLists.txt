@@ -14,35 +14,27 @@ if (MSVC)
         add_compile_options(/MT)
     endif ()
     add_compile_options(/wd4267)
-    find_package(PythonLibs REQUIRED)
-    set(PYTHON_LIBRARY "")
 elseif (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pedantic -Wp,-w")
     set(CMAKE_CFLAGS "${CMAKE_CFLAGS} -pedantic -Wp,-w")
-    set(PYTHON_INCLUDE_DIR D:/msys64/mingw64/include/python2.7)
-    set(PYTHON_LIBRARY D:/msys64/mingw64/lib/python2.7)
-    set(PYTHON_LIBRARY_RELEASE -lpython2.7.dll)
 endif ()
-message(STATUS "Python. Include  : ${PYTHON_INCLUDE_DIR}")
-message(STATUS "Python. Libs     : ${PYTHON_LIBRARY}")
-message(STATUS "Python. Libraries: ${PYTHON_LIBRARIES}")
-include_directories(${PYTHON_INCLUDE_DIR})
-link_directories(${PYTHON_LIBRARY})
 
 include_directories(src)
-include_directories(src/api)
-include_directories(src/manager)
-include_directories(src/db_context)
+include_directories(src/plugin_api)
+include_directories(src/plugin_manager)
+include_directories(src/plugin_context)
+include_directories(src/plugin_python)
 include_directories(lib/sqlite)
 include_directories(lib/tinyxml2)
 include_directories(lib/googletest/googletest/include)
 add_subdirectory(lib/googletest/googletest)
 add_subdirectory(lib/sqlite)
-add_subdirectory(src/api)
-add_subdirectory(src/manager)
-add_subdirectory(src/db_context)
+add_subdirectory(src/plugin_api)
+add_subdirectory(src/plugin_manager)
+add_subdirectory(src/plugin_context)
+add_subdirectory(src/plugin_python)
 
-set(ALGORITHM_SOURCE_FILES src/app/main.cpp)
+set(ALGORITHM_SOURCE_FILES src/plugin_app/main.cpp)
 set(COMMON_SOURCE_FILES    lib/tinyxml2/tinyxml2.cpp)
 set(TESTS_SOURCE_FILES
         tests/python_plugin_test.cpp
@@ -54,14 +46,14 @@ set(TESTS_SOURCE_FILES
         tests/module_manager_test.cpp)
 
 add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES} ${COMMON_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARY_RELEASE} api manager)
+target_link_libraries(${PROJECT_NAME} plugin_api plugin_manager)
 
 add_executable(${PROJECT_NAME}_tests ${TESTS_SOURCE_FILES} ${COMMON_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main ${PYTHON_LIBRARY_RELEASE}
-        api manager postgresql_context sqlite_context)
+target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main
+        plugin_api plugin_python plugin_manager postgresql_context sqlite_context)
 
 add_library(dynamic_module_library SHARED tests/dynamic_module_library.cpp)
-target_link_libraries(dynamic_module_library api)
+target_link_libraries(dynamic_module_library plugin_api)
 
 file(COPY
         ${CMAKE_SOURCE_DIR}/tests_data/plugin.01.py
