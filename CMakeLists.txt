@@ -14,6 +14,7 @@ if (MSVC)
         add_compile_options(/MT)
     endif ()
     add_compile_options(/wd4267)
+    add_compile_options(/wd4251)
 elseif (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pedantic -Wp,-w")
     set(CMAKE_CFLAGS "${CMAKE_CFLAGS} -pedantic -Wp,-w")
@@ -24,6 +25,7 @@ include_directories(src/plugin_api)
 include_directories(src/plugin_manager)
 include_directories(src/plugin_context)
 include_directories(src/plugin_python)
+include_directories(src/plugin_common)
 include_directories(lib/sqlite)
 include_directories(lib/tinyxml2)
 include_directories(lib/googletest/googletest/include)
@@ -33,9 +35,9 @@ add_subdirectory(src/plugin_api)
 add_subdirectory(src/plugin_manager)
 add_subdirectory(src/plugin_context)
 add_subdirectory(src/plugin_python)
+add_subdirectory(src/plugin_common)
 
 set(ALGORITHM_SOURCE_FILES src/plugin_app/main.cpp)
-set(COMMON_SOURCE_FILES    lib/tinyxml2/tinyxml2.cpp)
 set(TESTS_SOURCE_FILES
         tests/python_plugin_test.cpp
         tests/module_context_test.cpp
@@ -45,12 +47,12 @@ set(TESTS_SOURCE_FILES
         tests/sqlite_context_test.cpp
         tests/module_manager_test.cpp)
 
-add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES} ${COMMON_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} plugin_api plugin_manager)
+add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME} plugin_api plugin_manager plugin_common)
 
-add_executable(${PROJECT_NAME}_tests ${TESTS_SOURCE_FILES} ${COMMON_SOURCE_FILES})
+add_executable(${PROJECT_NAME}_tests ${TESTS_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main
-        plugin_api plugin_python plugin_manager postgresql_context sqlite_context)
+        plugin_api plugin_python plugin_manager postgresql_context sqlite_context plugin_common)
 
 add_library(dynamic_module_library SHARED tests/dynamic_module_library.cpp)
 target_link_libraries(dynamic_module_library plugin_api)

@@ -6,7 +6,7 @@
 #include <map>
 #include <plugin_spec.h>
 
-class LIBRARY_API ModuleContext {
+class API_LIBRARY_API ModuleContext {
     std::map<std::string, std::string> _properties;
     std::shared_ptr<ModuleContext> _parent;
 public:
@@ -29,7 +29,7 @@ public:
     operator bool() const;
 };
 
-class LIBRARY_API Module {
+class API_LIBRARY_API Module {
 public:
     Module() {}
 
@@ -40,7 +40,7 @@ public:
     virtual bool execute(std::shared_ptr<ModuleContext> context) = 0;
 };
 
-class LIBRARY_API ScriptModule : public Module {
+class API_LIBRARY_API ScriptModule : public Module {
 public:
     ScriptModule(const PluginSpec &spec);
 

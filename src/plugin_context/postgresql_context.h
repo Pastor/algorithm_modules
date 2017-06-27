@@ -5,7 +5,7 @@
 
 struct PostgreSqlContextPrivate;
 
-class LIBRARY_API PostgreSqlContext final: public SqlContext {
+class CONTEXT_LIBRARY_API PostgreSqlContext final: public SqlContext {
     std::shared_ptr<PostgreSqlContextPrivate> d;
 public:
     PostgreSqlContext();

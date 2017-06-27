@@ -3,7 +3,13 @@
 
 #include <plugin_api.h>
 
-class LIBRARY_API SqlContext : public ModuleContext {
+#if defined(EXPORT_CONTEXT_LIBRARY)
+#define CONTEXT_LIBRARY_API __declspec(dllexport)
+#else
+#define CONTEXT_LIBRARY_API __declspec(dllimport)
+#endif
+
+class CONTEXT_LIBRARY_API SqlContext : public ModuleContext {
 public:
     enum Type {
         PostgreSQL,

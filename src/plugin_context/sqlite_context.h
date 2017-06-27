@@ -5,7 +5,7 @@
 
 struct SqliteContextPrivate;
 
-class LIBRARY_API SqliteContext final: public SqlContext {
+class CONTEXT_LIBRARY_API SqliteContext final: public SqlContext {
     std::shared_ptr<SqliteContextPrivate> d;
 public:
     SqliteContext();

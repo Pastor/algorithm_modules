@@ -6,7 +6,7 @@
 
 struct DynamicLibraryModulePrivate;
 
-class LIBRARY_API DynamicLibraryModule final: public Module {
+class API_LIBRARY_API DynamicLibraryModule final: public Module {
 public:
     DynamicLibraryModule(const std::string &library_path);
     virtual ~DynamicLibraryModule();

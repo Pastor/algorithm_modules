@@ -5,13 +5,13 @@
 #include <vector>
 #include <tinyxml2.h>
 
-#if defined(EXPORT_LIBRARY)
-#define LIBRARY_API __declspec(dllexport)
+#if defined(EXPORT_API_LIBRARY)
+#define API_LIBRARY_API __declspec(dllexport)
 #else
-#define LIBRARY_API __declspec(dllimport)
+#define API_LIBRARY_API __declspec(dllimport)
 #endif
 
-struct LIBRARY_API PluginSpec final {
+struct API_LIBRARY_API PluginSpec final {
     enum ModuleType {
         DynamicLibrary,
         PythonScript,
@@ -32,7 +32,7 @@ struct LIBRARY_API PluginSpec final {
 
 typedef std::vector<PluginSpec> PluginSpecList;
 
-class LIBRARY_API PluginSpecController final {
+class API_LIBRARY_API PluginSpecController final {
     PluginSpecList _list;
     const std::string _file_name;
 
