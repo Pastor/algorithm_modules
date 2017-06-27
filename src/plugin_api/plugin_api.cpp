@@ -44,3 +44,8 @@ ModuleContext::ModuleContext() {
 ModuleContext::ModuleContext(std::shared_ptr<ModuleContext> parent)
         : _parent(parent) {
 }
+
+const std::map<std::string, std::string> &
+ModuleContext::entries() const {
+    return _properties;
+}

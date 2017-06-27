@@ -19,11 +19,19 @@
 #include <python_plugin_module.h>
 
 static bool start_plugin(PyObject *fun, std::shared_ptr<ModuleContext> context) {
-    auto arg_context = PyString_FromFormat("context");
-    auto arg_connection = PyString_FromFormat("connection");
-    if (fun && PyCallable_Check(fun) && *context) {
+    auto arg_context = PyDict_New();
+    if (context) {
+        const auto &prop = context->entries();
+        for (auto it = prop.begin(); it != prop.end(); ++it) {
+            auto value = PyString_FromFormat((*it).second.c_str());
+            PyDict_SetItemString(arg_context, (*it).first.c_str(), value);
+            Py_DecRef(value);
+        }
+    }
+    auto arg_name = PyString_FromFormat("PythonScriptModule");
+    if (fun && PyCallable_Check(fun)) {
         /**TODO: https://docs.python.org/3.6/c-api/arg.html#c.Py_BuildValue */
-        auto args = Py_BuildValue("OO", arg_context, arg_connection);
+        auto args = Py_BuildValue("OO", arg_context, arg_name);
         auto result = PyEval_CallObject(fun, args);
         fprintf(stdout, "Result: %d\n", _PyInt_AsInt(result));
         Py_DecRef(args);
@@ -36,9 +44,9 @@ static bool execute(const std::string content, std::shared_ptr<ModuleContext> co
     auto compiled_fun = Py_CompileString(content.c_str(), "", Py_file_input);
     auto compiled_module = PyImport_ExecCodeModule(const_cast<char *>(std::string("plugin").c_str()), compiled_fun);
     {
-        auto hashlib_module = PyImport_ImportModule("os");
-        PyModule_AddObject(compiled_module, "os", hashlib_module);
-        //Py_DecRef(hashlib_module);
+        auto os_module = PyImport_ImportModule("os");
+        PyModule_AddObject(compiled_module, "os", os_module);
+        Py_DecRef(os_module);
     }
     auto fun = PyObject_GetAttrString(compiled_module, "main");
     auto ret = start_plugin(fun, context);

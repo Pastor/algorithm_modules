@@ -23,7 +23,7 @@ endif ()
 include_directories(src)
 include_directories(src/plugin_api)
 include_directories(src/plugin_manager)
-include_directories(src/plugin_context)
+include_directories(src/plugin_modules)
 include_directories(src/plugin_python)
 include_directories(src/plugin_common)
 include_directories(lib/sqlite)
@@ -33,7 +33,7 @@ add_subdirectory(lib/googletest/googletest)
 add_subdirectory(lib/sqlite)
 add_subdirectory(src/plugin_api)
 add_subdirectory(src/plugin_manager)
-add_subdirectory(src/plugin_context)
+add_subdirectory(src/plugin_modules)
 add_subdirectory(src/plugin_python)
 add_subdirectory(src/plugin_common)
 
@@ -43,8 +43,8 @@ set(TESTS_SOURCE_FILES
         tests/module_context_test.cpp
         tests/dynamic_module_test.cpp
         tests/plugin_spec_test.cpp
-        tests/postgresql_context_test.cpp
-        tests/sqlite_context_test.cpp
+        tests/postgresql_module_test.cpp
+        tests/sqlite_module_test.cpp
         tests/module_manager_test.cpp)
 
 add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES})
@@ -52,7 +52,7 @@ target_link_libraries(${PROJECT_NAME} plugin_api plugin_manager plugin_common)
 
 add_executable(${PROJECT_NAME}_tests ${TESTS_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main
-        plugin_api plugin_python plugin_manager postgresql_context sqlite_context plugin_common)
+        plugin_api plugin_python plugin_manager plugin_common)
 
 add_library(dynamic_module_library SHARED tests/dynamic_module_library.cpp)
 target_link_libraries(dynamic_module_library plugin_api)
@@ -65,6 +65,3 @@ file(COPY
         ${CMAKE_SOURCE_DIR}/tests_data/configuration.xml
         DESTINATION
         ${CMAKE_BINARY_DIR}/tests_data)
-#Start environment
-#PYTHONHOME=D:/msys64/mingw64/include
-#PYTHONPATH=D:/msys64/mingw64/lib/python2.7

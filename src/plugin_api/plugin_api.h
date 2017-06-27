@@ -6,6 +6,18 @@
 #include <map>
 #include <plugin_spec.h>
 
+namespace Constants {
+    const std::string Database_Hostname   = "db.connection.hostname";
+    const std::string Database_Database   = "db.connection.database";
+    const std::string Database_Username   = "db.connection.username";
+    const std::string Database_Password   = "db.connection.password";
+    const std::string Database_Port       = "db.connection.port";
+
+    const std::string Database_Stream_In  = "database.stream.in";
+    const std::string Database_Stream_Out = "database.stream.out";
+    const std::string Stream_Input = "stream.input";
+}
+
 class API_LIBRARY_API ModuleContext {
     std::map<std::string, std::string> _properties;
     std::shared_ptr<ModuleContext> _parent;
@@ -24,9 +36,9 @@ public:
 
     bool bool_value(const std::string &key);
 
-    virtual bool is_database_context() const { return false; }
-
     operator bool() const;
+
+    const std::map<std::string, std::string> &entries() const;
 };
 
 class API_LIBRARY_API Module {

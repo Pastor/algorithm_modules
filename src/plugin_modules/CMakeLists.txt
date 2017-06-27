@@ -12,13 +12,13 @@ link_directories(${PostgreSQL_LIBRARY_DIRS})
 
 #message(STATUS "PostgreSQL: ${PostgreSQL_LIBRARY}")
 
-set(POSTGRESQL_SOURCE_FILES postgresql_context.cpp sql_context.cpp)
-set(SQLITE_SOURCE_FILES sqlite_context.cpp sql_context.cpp)
+set(POSTGRESQL_SOURCE_FILES postgresql_module.cpp sql_module.cpp)
+set(SQLITE_SOURCE_FILES sqlite_module.cpp sql_module.cpp)
 
-add_library(postgresql_context SHARED ${POSTGRESQL_SOURCE_FILES})
-add_library(sqlite_context SHARED ${SQLITE_SOURCE_FILES})
-target_link_libraries(postgresql_context plugin_api ${PostgreSQL_LIBRARIES})
-target_link_libraries(sqlite_context plugin_api sqlite)
+add_library(postgresql_module SHARED ${POSTGRESQL_SOURCE_FILES})
+add_library(sqlite_module SHARED ${SQLITE_SOURCE_FILES})
+target_link_libraries(postgresql_module plugin_api ${PostgreSQL_LIBRARIES})
+target_link_libraries(sqlite_module plugin_api sqlite)
 
 file(COPY
         ${PostgreSQL_LIBRARY}

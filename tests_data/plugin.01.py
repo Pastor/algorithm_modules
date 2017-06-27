@@ -7,12 +7,12 @@ class Context:
         self.properties = []
 
 
-def main(context, connection):
+def main(context, name):
     print("cwd: %s" % os.getcwd())
-    print("called(%s, %s)" % (context, connection))
+    print("called(%s, %s)" % (context, name))
     return 0
 
 if __name__ == '__main__':
     ctx = Context()
     pprint(vars(ctx))
-    main(ctx, "1")
+    main(ctx, "name")
