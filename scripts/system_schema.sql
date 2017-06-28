@@ -23,4 +23,4 @@ CREATE TABLE "processing"."processing_module"(
   created_at    TIMESTAMP NOT NULL DEFAULT now()
 );
 
---INSERT INTO "processing"."processing_module"(stream_input, stage, module_id, table_name) VALUES() RETUNING id
+--INSERT INTO "processing"."processing_module"(stream_input, stage, module_id, table_name) VALUES() RETURNING id
