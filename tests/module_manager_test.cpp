@@ -3,14 +3,6 @@
 #include <dynamic_library_module.h>
 #include "tests.h"
 
-TEST(PluginManager, RegisterModule) {
-    PluginManager manager;
-    auto module = std::shared_ptr<Module>(new DynamicLibraryModule(library));
-
-    manager.register_module(module);
-    ASSERT_TRUE(manager.contains("dynamic_module_library"));
-}
-
 TEST(PluginManager, RegisterSpec) {
     PluginManager manager;
     PluginSpec spec;
@@ -21,12 +13,12 @@ TEST(PluginManager, RegisterSpec) {
     spec.plugin_version = 1.02;
     spec.plugin_type = PluginSpec::DynamicLibrary;
     manager.register_module(spec);
-    ASSERT_TRUE(manager.contains("dynamic_module_library"));
+    ASSERT_TRUE(manager.contains("TestDynamic"));
 }
 
 TEST(PluginManager, Load) {
     PluginManager manager;
 
     manager.load(configuration_file);
-    ASSERT_TRUE(manager.contains("dynamic_module_library"));
+    ASSERT_TRUE(manager.contains("TestDynamic"));
 }

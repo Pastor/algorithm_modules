@@ -7,15 +7,15 @@
 #include <plugin_spec.h>
 
 namespace Constants {
-    const std::string Database_Hostname   = "db.connection.hostname";
-    const std::string Database_Database   = "db.connection.database";
-    const std::string Database_Username   = "db.connection.username";
-    const std::string Database_Password   = "db.connection.password";
-    const std::string Database_Port       = "db.connection.port";
+    const std::string Database_Hostname   = "Database.Connection.Hostname";
+    const std::string Database_Database   = "Database.Connection.Database";
+    const std::string Database_Username   = "Database.Connection.Username";
+    const std::string Database_Password   = "Database.Connection.Password";
+    const std::string Database_Port       = "Database.Connection.Port";
 
-    const std::string Database_Stream_In  = "database.stream.in";
-    const std::string Database_Stream_Out = "database.stream.out";
-    const std::string Stream_Input = "stream.input";
+    const std::string Database_Stream_In  = "Database.Stream.In";
+    const std::string Database_Stream_Out = "Database.Stream.Out";
+    const std::string Stream_Input = "Stream.Input";
 }
 
 class API_LIBRARY_API ModuleContext {

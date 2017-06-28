@@ -2,15 +2,19 @@
 #include <map>
 #include <plugin_manager.h>
 #include <dynamic_library_module.h>
-#include <python_plugin_module.h>
+#include <module_controller.h>
 
 struct PluginManagerPrivate {
-    std::map<std::string, std::pair<PluginSpec, std::shared_ptr<Module>>> modules;
+    std::map<std::string, PluginSpec> modules;
+    std::unique_ptr<ModuleController> module_controller;
+
+    PluginManagerPrivate() : module_controller(new ModuleController) {}
 };
 
 void
 PluginManager::register_dynamic(const std::string &file_name) {
-    register_module(std::shared_ptr<Module>(new DynamicLibraryModule(file_name)));
+    DynamicLibraryModule module(file_name);
+    register_module(module.spec());
 }
 
 void
@@ -18,21 +22,22 @@ PluginManager::register_script(const std::string &name,
                                const std::string &description,
                                double version,
                                const std::string &file_name) {
-    register_module(std::shared_ptr<Module>(new PythonFileScriptModule(file_name, name, description, version)));
+    PluginSpec spec;
+    spec.plugin_name = name;
+    spec.plugin_type = PluginSpec::PythonScript;
+    spec.plugin_description = description;
+    spec.plugin_version = version;
+    spec.plugin_file_path = file_name;
+    register_module(spec);
 }
 
 void
 PluginManager::execute(const std::string &name, std::shared_ptr<ModuleContext> context) {
     auto &module = d->modules[name];
-    if (module.second) {
-        module.second->execute(context);
+    if (module.is_valid()) {
+        (*d->module_controller).execute(module, context);
+//        module.second->execute(context);
     }
-}
-
-void
-PluginManager::register_module(std::shared_ptr<Module> module) {
-    auto &spec = module->spec();
-    d->modules[spec.plugin_name] = std::make_pair(spec, module);
 }
 
 PluginManager::PluginManager()
@@ -43,7 +48,7 @@ PluginManager::PluginManager()
 bool
 PluginManager::contains(const std::string &name) const {
     const auto &it = d->modules.find(name);
-    return it != d->modules.end() && it->second.second;
+    return it != d->modules.end() && it->second.is_valid();
 }
 
 void
@@ -60,22 +65,11 @@ PluginManager::load(const std::string &file_name) {
 
 void
 PluginManager::register_module(const PluginSpec &spec) {
-
     if (!spec.is_valid()) {
         fprintf(stdout, "Can't register not valid module\n");
         return;
     }
-    switch (spec.plugin_type) {
-        case PluginSpec::DynamicLibrary:
-            register_dynamic(spec.plugin_file_path);
-            break;
-        case PluginSpec::PythonScript:
-            register_script(spec.plugin_name, spec.plugin_description, spec.plugin_version, spec.plugin_file_path);
-            break;
-        default:
-            fprintf(stdout, "Can't register unknown module\n");
-            break;
-    }
+    d->modules[spec.plugin_name] = spec;
 }
 
 

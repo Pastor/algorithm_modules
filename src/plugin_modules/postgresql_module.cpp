@@ -13,8 +13,13 @@ plugin_call(ModuleContext *context) {
     if (c != nullptr) {
         if (PQstatus(c) == CONNECTION_OK) {
             ret = true;
+        } else {
+            const auto message = PQerrorMessage(c);
+            fprintf(stderr, "Connection error: %s\n", message);
         }
         PQfinish(c);
+    } else {
+        fprintf(stderr, "I can't connect to database\n");
     }
     return ret;
 }

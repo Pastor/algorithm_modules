@@ -46,6 +46,8 @@ struct DynamicLibraryModulePrivate {
     bool execute(std::shared_ptr<ModuleContext> context) {
         if (plugin_call != nullptr && context) {
             return (*plugin_call)(context.get());
+        } else {
+            fprintf(stdout, "Plugin.Call not found in library\n");
         }
         return false;
     }

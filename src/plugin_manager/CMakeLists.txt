@@ -8,4 +8,4 @@ add_definitions(-DEXPORT_MANAGER_LIBRARY)
 set(SOURCE_FILES plugin_manager.cpp)
 
 add_library(plugin_manager SHARED ${SOURCE_FILES})
-target_link_libraries(plugin_manager plugin_api plugin_python plugin_common)
+target_link_libraries(plugin_manager plugin_api plugin_common module_controller)

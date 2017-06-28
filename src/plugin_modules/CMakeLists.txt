@@ -6,7 +6,7 @@ find_package(PostgreSQL REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-add_definitions(-DEXPORT_CONTEXT_LIBRARY)
+add_definitions(-DEXPORT_MODULE_LIBRARY)
 include_directories(${PostgreSQL_INCLUDE_DIRS})
 link_directories(${PostgreSQL_LIBRARY_DIRS})
 
@@ -14,14 +14,17 @@ link_directories(${PostgreSQL_LIBRARY_DIRS})
 
 set(POSTGRESQL_SOURCE_FILES postgresql_module.cpp sql_module.cpp)
 set(SQLITE_SOURCE_FILES sqlite_module.cpp sql_module.cpp)
+set(CONTROLLER_SOURCE_FILES module_controller.cpp)
 
 add_library(postgresql_module SHARED ${POSTGRESQL_SOURCE_FILES})
 add_library(sqlite_module SHARED ${SQLITE_SOURCE_FILES})
+add_library(module_controller SHARED ${CONTROLLER_SOURCE_FILES})
 target_link_libraries(postgresql_module plugin_api ${PostgreSQL_LIBRARIES})
+target_link_libraries(module_controller plugin_api ${PostgreSQL_LIBRARIES} plugin_python)
 target_link_libraries(sqlite_module plugin_api sqlite)
 
 file(COPY
-        ${PostgreSQL_LIBRARY}
+        ${PostgreSQL_LIBRARY}/../../bin/libpq.dll
         DESTINATION
         ${CMAKE_BINARY_DIR})
 file(COPY
@@ -29,6 +32,6 @@ file(COPY
         DESTINATION
         ${CMAKE_BINARY_DIR})
 file(COPY
-        ${PostgreSQL_LIBRARY}/../../bin/iconv.dll
+        ${PostgreSQL_LIBRARY}/../../bin/libiconv-2.dll
         DESTINATION
         ${CMAKE_BINARY_DIR})

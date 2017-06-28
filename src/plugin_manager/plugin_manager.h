@@ -21,7 +21,6 @@ public:
     void load(const std::string &file_name);
 
     void register_module(const PluginSpec &spec);
-    void register_module(std::shared_ptr<Module> module);
     void register_dynamic(const std::string &file_name);
     void register_script(const std::string &name, const std::string &description,
                          double version, const std::string &file_name);
