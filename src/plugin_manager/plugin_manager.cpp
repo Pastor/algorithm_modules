@@ -2,7 +2,7 @@
 #include <map>
 #include <plugin_manager.h>
 #include <dynamic_library_module.h>
-#include <module_controller.h>
+#include <plugin_controller.h>
 
 struct PluginManagerPrivate {
     std::map<std::string, PluginSpec> modules;
@@ -75,9 +75,18 @@ PluginManager::load(const std::string &file_name) {
 void
 PluginManager::register_module(const PluginSpec &spec) {
     if (!spec.is_valid()) {
-        fprintf(stdout, "Can't register not valid module\n");
+        fprintf(stdout, "[PluginManager] Can't register not valid module \n");
+        spec.dump("PluginManager");
         return;
     }
     d->modules[spec.plugin_name] = spec;
+}
+
+const PluginSpec &
+PluginManager::spec(const std::string &name) const {
+    const auto it = d->modules.find(name);
+    if (it != d->modules.end() && it->second.is_valid())
+        return (*it).second;
+    return PluginSpec();
 }
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Model>
+    <Name>Module_01</Name>
+    <Description>This is the 01 module processing</Description>
+    <Sequence>
+        <Module Version="1.02">TestDynamic</Module>
+        <Module Version="1.02">PythonModule</Module>
+    </Sequence>
+</Model>

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <python_plugin_module.h>
 #include <windows.h>
-#include "module_controller.h"
+#include "plugin_controller.h"
 
 #pragma comment(lib, "Rpcrt4.lib")
 
@@ -21,8 +21,8 @@ public:
         c = PQsetdbLogin(hostname.c_str(), port.c_str(), "", "", database.c_str(), username.c_str(), password.c_str());
 
         module_name = __module_name(spec);
-        user_name = std::string("User_") + module_name;
-        schema_name = std::string("Schema_") + module_name;
+        user_name = std::string("Module_") + module_name;
+        schema_name = std::string("Module_") + module_name;
     }
 
     ~ControllerService() {
@@ -34,8 +34,8 @@ public:
 
     std::string __module_name(const PluginSpec &spec) const {
         static char buffer[20];
-        sprintf(buffer, "%.2f", spec.plugin_version);
-        return spec.plugin_name + "_v" + buffer;
+        sprintf(buffer, "%02.2f", spec.plugin_version);
+        return std::string("v") + buffer + std::string("_") + spec.plugin_name;
     }
 
     bool is_user_exists(const std::string &user_name_text = std::string()) {

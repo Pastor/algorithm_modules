@@ -32,10 +32,16 @@ static bool start_plugin(PyObject *fun, std::shared_ptr<ModuleContext> context) 
     if (fun && PyCallable_Check(fun)) {
         /**TODO: https://docs.python.org/3.6/c-api/arg.html#c.Py_BuildValue */
         auto args = Py_BuildValue("OO", arg_context, arg_name);
+        Py_DecRef(arg_name);
+        Py_DecRef(arg_context);
         auto result = PyEval_CallObject(fun, args);
         fprintf(stdout, "Result: %d\n", _PyInt_AsInt(result));
         Py_DecRef(args);
+        Py_DecRef(result);
         return true;
+    } else {
+        Py_DecRef(arg_name);
+        Py_DecRef(arg_context);
     }
     return false;
 }
@@ -61,9 +67,11 @@ struct PythonScriptModulePrivate final {
 
     bool execute(std::shared_ptr<ModuleContext> context) {
         bool ret;
+        //Py_BEGIN_ALLOW_THREADS
         auto state = PyGILState_Ensure();
         ret = ::execute(_content, context);
         PyGILState_Release(state);
+        //Py_END_ALLOW_THREADS
         return ret;
     }
 

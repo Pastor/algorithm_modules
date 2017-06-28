@@ -17,4 +17,14 @@ plugin_version() {
     return 1.02;
 }
 
+__declspec(dllexport) PluginSpec::ModuleType
+plugin_type() {
+    return PluginSpec::DynamicLibrary;
+}
+
+__declspec(dllexport) PluginSpec::ModuleStage
+plugin_stage() {
+    return PluginSpec::FirstInput;
+}
+
 }

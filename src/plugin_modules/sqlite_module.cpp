@@ -20,3 +20,13 @@ double
 plugin_version() {
     return 1.02;
 }
+
+PluginSpec::ModuleType
+plugin_type() {
+    return PluginSpec::DynamicLibrary;
+}
+
+PluginSpec::ModuleStage
+plugin_stage() {
+    return PluginSpec::FirstInput;
+}

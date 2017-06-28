@@ -3,13 +3,9 @@
     <Properties>
         <Database.Connection.Hostname>localhost</Database.Connection.Hostname>
         <Database.Connection.Database>operational_db</Database.Connection.Database>
-        <Database.Connection.Username>postgres</Database.Connection.Username>
-        <Database.Connection.Password>123456</Database.Connection.Password>
+        <Database.Connection.Username>testing</Database.Connection.Username>
+        <Database.Connection.Password>testing</Database.Connection.Password>
         <Database.Connection.Port>5432</Database.Connection.Port>
-
-        <Database.Stream.In></Database.Stream.In>
-        <Database.Stream.Out></Database.Stream.Out>
-        <Stream.Input></Stream.Input>
     </Properties>
     <PluginSpecs>
         <PluginSpec>
@@ -21,6 +17,19 @@
             <Stage>FirstInput</Stage>
             <Properties>
                 <CreatedAt>2017-06-28T13:45:00.000+0000</CreatedAt>
+            </Properties>
+        </PluginSpec>
+        <PluginSpec>
+            <Name>PythonModule</Name>
+            <FilePath>tests_data/plugin.01.py</FilePath>
+            <Description>Преобразрвания</Description>
+            <Version>1.02</Version>
+            <Type>PythonScript</Type>
+            <Stage>ProcessingInput</Stage>
+            <!-- Имя модуля, с которого можно получать данные -->
+            <InputStream>TestDynamic</InputStream>
+            <Properties>
+                <CreatedAt>2017-06-28T13:46:00.000+0000</CreatedAt>
             </Properties>
         </PluginSpec>
     </PluginSpecs>

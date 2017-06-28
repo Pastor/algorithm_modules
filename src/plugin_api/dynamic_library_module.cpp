@@ -5,6 +5,8 @@ extern "C" {
 typedef bool (__stdcall *plugin_call_fun)(ModuleContext *context);
 typedef const char *(__stdcall *plugin_name_fun)();
 typedef double (__stdcall *plugin_version_fun)();
+typedef PluginSpec::ModuleStage (__stdcall *plugin_stage_fun)();
+typedef PluginSpec::ModuleType (__stdcall *plugin_type_fun)();
 }
 
 struct DynamicLibraryModulePrivate {
@@ -14,11 +16,15 @@ struct DynamicLibraryModulePrivate {
             plugin_name = (plugin_name_fun)GetProcAddress(h_library, "plugin_name");
             plugin_call = (plugin_call_fun)GetProcAddress(h_library, "plugin_call");
             plugin_version = (plugin_version_fun)GetProcAddress(h_library, "plugin_version");
+            plugin_stage = (plugin_stage_fun)GetProcAddress(h_library, "plugin_stage");
+            plugin_type = (plugin_type_fun)GetProcAddress(h_library, "plugin_type");
 
             _spec.plugin_version = version();
             _spec.plugin_type = PluginSpec::DynamicLibrary;
             _spec.plugin_name = name();
             _spec.plugin_file_path = library_path;
+            _spec.plugin_type = plugin_type != nullptr ? (*plugin_type)() : PluginSpec::UnknownModule;
+            _spec.plugin_stage = plugin_stage != nullptr ? (*plugin_stage)() : PluginSpec::UnknownInput;
         }
     }
 
@@ -61,6 +67,8 @@ private:
     plugin_call_fun    plugin_call = nullptr;
     plugin_name_fun    plugin_name = nullptr;
     plugin_version_fun plugin_version = nullptr;
+    plugin_type_fun    plugin_type = nullptr;
+    plugin_stage_fun   plugin_stage = nullptr;
     PluginSpec         _spec;
 };
 

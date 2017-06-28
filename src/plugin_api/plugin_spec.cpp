@@ -2,10 +2,10 @@
 #include <plugin_api.h>
 
 static PluginSpec::ModuleType
-parse_type(const char *type) {
-    if (type != nullptr && std::strcmp(type, "DynamicLibrary") == 0)
+parse_type(const std::string &type) {
+    if (!type.empty() && type == "DynamicLibrary")
         return PluginSpec::DynamicLibrary;
-    if (type != nullptr && std::strcmp(type, "PythonScript") == 0)
+    if (!type.empty() && type == "PythonScript")
         return PluginSpec::PythonScript;
     return PluginSpec::UnknownModule;
 }
@@ -23,10 +23,10 @@ to_type(PluginSpec::ModuleType type) {
 }
 
 static PluginSpec::ModuleStage
-parse_stage(const char *type) {
-    if (type != nullptr && std::strcmp(type, "FirstInput") == 0)
+parse_stage(const std::string &type) {
+    if (type == std::string("FirstInput"))
         return PluginSpec::FirstInput;
-    if (type != nullptr && std::strcmp(type, "ProcessingInput") == 0)
+    if (type == std::string("ProcessingInput"))
         return PluginSpec::ProcessingInput;
     return PluginSpec::UnknownInput;
 }
@@ -43,11 +43,11 @@ to_stage(PluginSpec::ModuleStage type) {
     }
 }
 
-static const char *
+static std::string
 child_element_value(const tinyxml2::XMLElement *element, const char *name) {
     auto child_element = element->FirstChildElement(name);
     if (child_element == nullptr)
-        return nullptr;
+        return "";
     return child_element->GetText();
 }
 
@@ -74,6 +74,10 @@ PluginSpec::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) c
     plugin_type_text->SetText(to_type(plugin_type));
     auto plugin_stage_text = document.NewElement("Stage");
     plugin_stage_text->SetText(to_stage(plugin_stage));
+    if (!plugin_input_stream.empty()) {
+        auto input_stream_text = document.NewElement("InputStream");
+        input_stream_text->SetText(plugin_input_stream.c_str());
+    }
 
     if (plugin_context) {
         plugin_context->toXml(plugin_spec, document);
@@ -97,6 +101,7 @@ PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
     plugin_version = child_element_double(element, "Version");
     plugin_type = parse_type(child_element_value(element, "Type"));
     plugin_stage = parse_stage(child_element_value(element, "Stage"));
+    plugin_input_stream = child_element_value(element, "InputStream");
     auto properties_xml = element->FirstChildElement("Properties");
     if (properties_xml != nullptr) {
         plugin_context.reset(new ModuleContext);
@@ -106,12 +111,29 @@ PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
 
 bool
 PluginSpec::is_valid() const {
+    if (plugin_stage == ProcessingInput && plugin_input_stream.empty())
+        return false;
     return !plugin_name.empty() && plugin_type != UnknownModule && plugin_version > 0.;
 }
 
 std::string
 PluginSpec::plugin_stage_text() const {
     return to_stage(plugin_stage);
+}
+
+std::string
+PluginSpec::plugin_type_text() const {
+    return to_type(plugin_type);
+}
+
+void
+PluginSpec::dump(const char *prefix) const {
+    fprintf(stdout, "[%s] Name         : %s\n", prefix, plugin_name.c_str());
+    fprintf(stdout, "[%s] Version      : %.2f\n", prefix, plugin_version);
+    fprintf(stdout, "[%s] Type         : %s\n", prefix, plugin_type_text().c_str());
+    fprintf(stdout, "[%s] Stage        : %s\n", prefix, plugin_stage_text().c_str());
+    fprintf(stdout, "[%s] InputStream  : %s\n", prefix, plugin_input_stream.c_str());
+    fprintf(stdout, "[%s] FilePath     : %s\n", prefix, plugin_file_path.c_str());
 }
 
 void
@@ -152,6 +174,8 @@ PluginSpecController::read(const tinyxml2::XMLDocument &document) {
 
         spec.fromXml(plugin_spec);
         _list.push_back(spec);
+        //fprintf(stdout, "[PluginSpecController] Read module\n");
+        //spec.dump("PluginSpecController");
     }
 }
 

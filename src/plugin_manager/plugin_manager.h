@@ -28,6 +28,7 @@ public:
 
     void execute(const std::string &name, std::shared_ptr<ModuleContext> context);
     bool contains(const std::string &name) const;
+    const PluginSpec &spec(const std::string &name) const;
 private:
     std::shared_ptr<PluginManagerPrivate> d;
 };

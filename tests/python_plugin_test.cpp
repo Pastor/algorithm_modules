@@ -34,8 +34,8 @@ TEST(PythonModule, PluginManager) {
     auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
     context->set_property(Constants::Database_Hostname, "localhost");
     context->set_property(Constants::Database_Database, "operational_db");
-    context->set_property(Constants::Database_Username, "postgres");
-    context->set_property(Constants::Database_Password, "123456");
+    context->set_property(Constants::Database_Username, "testing");
+    context->set_property(Constants::Database_Password, "testing");
     context->set_property(Constants::Database_Port, "5432");
     context->set_property(Constants::Stream_Input, "TestInputStream");
     manager.execute(spec.plugin_name, context);
