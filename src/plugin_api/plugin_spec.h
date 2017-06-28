@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <tinyxml2.h>
 
 #if defined(EXPORT_API_LIBRARY)
@@ -10,6 +11,8 @@
 #else
 #define API_LIBRARY_API __declspec(dllimport)
 #endif
+
+class ModuleContext;
 
 struct API_LIBRARY_API PluginSpec final {
     enum ModuleType {
@@ -23,6 +26,7 @@ struct API_LIBRARY_API PluginSpec final {
     double plugin_version;
     std::string plugin_description;
     ModuleType plugin_type = UnknownModule;
+    std::shared_ptr<ModuleContext> plugin_context;
 
     void toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) const;
     void fromXml(const tinyxml2::XMLElement *element);

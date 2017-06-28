@@ -1,4 +1,5 @@
 #include <plugin_spec.h>
+#include <plugin_api.h>
 
 static PluginSpec::ModuleType
 parse_type(const char *type) {
@@ -51,6 +52,10 @@ PluginSpec::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) c
     auto plugin_type_text = document.NewElement("Type");
     plugin_type_text->SetText(to_type(plugin_type));
 
+    if (plugin_context) {
+        plugin_context->toXml(plugin_spec, document);
+    }
+
     root->InsertEndChild(plugin_spec);
     plugin_spec->InsertEndChild(plugin_name_text);
     plugin_spec->InsertEndChild(plugin_file_path_text);
@@ -68,6 +73,11 @@ PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
     plugin_description = child_element_value(element, "Description");
     plugin_version = child_element_double(element, "Version");
     plugin_type = parse_type(child_element_value(element, "Type"));
+    auto properties_xml = element->FirstChildElement("Properties");
+    if (properties_xml != nullptr) {
+        plugin_context.reset(new ModuleContext);
+        plugin_context->fromXml(properties_xml);
+    }
 }
 
 bool

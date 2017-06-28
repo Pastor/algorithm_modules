@@ -8,7 +8,8 @@ struct PluginManagerPrivate {
     std::map<std::string, PluginSpec> modules;
     std::unique_ptr<ModuleController> module_controller;
 
-    PluginManagerPrivate() : module_controller(new ModuleController) {}
+    PluginManagerPrivate(std::shared_ptr<ModuleContext> context)
+            : module_controller(new ModuleController(context)) {}
 };
 
 void
@@ -40,10 +41,16 @@ PluginManager::execute(const std::string &name, std::shared_ptr<ModuleContext> c
     }
 }
 
-PluginManager::PluginManager()
-        : d(new PluginManagerPrivate) {
+PluginManager::PluginManager(std::shared_ptr<ModuleContext> context)
+        : d(new PluginManagerPrivate(context)) {
 
 }
+
+PluginManager::PluginManager()
+        : d(new PluginManagerPrivate(std::shared_ptr<ModuleContext>(new ModuleContext))){
+
+}
+
 
 bool
 PluginManager::contains(const std::string &name) const {
@@ -61,6 +68,7 @@ PluginManager::load(const std::string &file_name) {
     for (auto it = specs.begin(); it != specs.end(); ++it) {
         register_module((*it));
     }
+    (*d->module_controller).load(file_name);
 }
 
 void
@@ -71,5 +79,4 @@ PluginManager::register_module(const PluginSpec &spec) {
     }
     d->modules[spec.plugin_name] = spec;
 }
-
 

@@ -16,6 +16,7 @@ struct PluginManagerPrivate;
 
 class MANAGER_LIBRARY_API PluginManager {
 public:
+    PluginManager(std::shared_ptr<ModuleContext> context);
     PluginManager();
 
     void load(const std::string &file_name);

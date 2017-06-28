@@ -7,13 +7,13 @@
 #include <plugin_spec.h>
 
 namespace Constants {
-    const std::string Database_Hostname   = "Database.Connection.Hostname";
-    const std::string Database_Database   = "Database.Connection.Database";
-    const std::string Database_Username   = "Database.Connection.Username";
-    const std::string Database_Password   = "Database.Connection.Password";
-    const std::string Database_Port       = "Database.Connection.Port";
+    const std::string Database_Hostname = "Database.Connection.Hostname";
+    const std::string Database_Database = "Database.Connection.Database";
+    const std::string Database_Username = "Database.Connection.Username";
+    const std::string Database_Password = "Database.Connection.Password";
+    const std::string Database_Port = "Database.Connection.Port";
 
-    const std::string Database_Stream_In  = "Database.Stream.In";
+    const std::string Database_Stream_In = "Database.Stream.In";
     const std::string Database_Stream_Out = "Database.Stream.Out";
     const std::string Stream_Input = "Stream.Input";
 }
@@ -39,6 +39,12 @@ public:
     operator bool() const;
 
     const std::map<std::string, std::string> &entries() const;
+
+    void toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) const;
+
+    void fromXml(const tinyxml2::XMLElement *element);
+
+    void copy_to(ModuleContext &context) const;
 };
 
 class API_LIBRARY_API Module {

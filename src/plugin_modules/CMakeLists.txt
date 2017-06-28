@@ -20,7 +20,7 @@ add_library(postgresql_module SHARED ${POSTGRESQL_SOURCE_FILES})
 add_library(sqlite_module SHARED ${SQLITE_SOURCE_FILES})
 add_library(module_controller SHARED ${CONTROLLER_SOURCE_FILES})
 target_link_libraries(postgresql_module plugin_api ${PostgreSQL_LIBRARIES})
-target_link_libraries(module_controller plugin_api ${PostgreSQL_LIBRARIES} plugin_python)
+target_link_libraries(module_controller plugin_api ${PostgreSQL_LIBRARIES} plugin_python plugin_common)
 target_link_libraries(sqlite_module plugin_api sqlite)
 
 file(COPY

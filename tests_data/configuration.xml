@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+    <Properties>
+        <Database.Connection.Hostname>localhost</Database.Connection.Hostname>
+        <Database.Connection.Database>operational_db</Database.Connection.Database>
+        <Database.Connection.Username>dcm</Database.Connection.Username>
+        <Database.Connection.Password>12345678</Database.Connection.Password>
+        <Database.Connection.Port>5432</Database.Connection.Port>
+
+        <Database.Stream.In></Database.Stream.In>
+        <Database.Stream.Out></Database.Stream.Out>
+        <Stream.Input></Stream.Input>
+    </Properties>
     <PluginSpecs>
         <PluginSpec>
             <Name>TestDynamic</Name>
@@ -7,6 +18,9 @@
             <Description>Динамическая библиотека(тестовая)</Description>
             <Version>1.02</Version>
             <Type>DynamicLibrary</Type>
+            <Properties>
+                <CreatedAt>2017-06-28T13:45:00.000+0000</CreatedAt>
+            </Properties>
         </PluginSpec>
     </PluginSpecs>
 </Configuration>

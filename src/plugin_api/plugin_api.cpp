@@ -49,3 +49,40 @@ const std::map<std::string, std::string> &
 ModuleContext::entries() const {
     return _properties;
 }
+
+void
+ModuleContext::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) const {
+    auto properties_xml = document.NewElement("Properties");
+    root->InsertEndChild(properties_xml);
+    for (auto it = _properties.begin(); it != _properties.end(); ++it) {
+        auto property_xml = document.NewElement((*it).first.c_str());
+        property_xml->SetText((*it).second.c_str());
+        properties_xml->InsertEndChild(property_xml);
+    }
+}
+
+void
+ModuleContext::fromXml(const tinyxml2::XMLElement *properties_xml) {
+    if (properties_xml == nullptr || std::strcmp(properties_xml->Name(), "Properties"))
+        return;
+    _properties.clear();
+    for (auto node = properties_xml->FirstChild();
+         node;
+         node = node->NextSibling()) {
+        const auto element = node->ToElement();
+        if (element == nullptr)
+            continue;
+        const auto value = element->GetText();
+        if (value != nullptr && std::strlen(value) > 0) {
+            _properties[element->Name()] = value;
+        }
+        fprintf(stdout, "ModuleContext. %s = %s\n", element->Name(), value);
+    }
+}
+
+void
+ModuleContext::copy_to(ModuleContext &context) const {
+    for (auto it = _properties.begin(); it != _properties.end(); ++it) {
+        context.set_property((*it).first, (*it).second);
+    }
+}

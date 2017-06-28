@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <plugin_api.h>
 #include <plugin_spec.h>
 #include "tests.h"
 
@@ -56,4 +57,14 @@ TEST(PluginSpecController, Write) {
     ASSERT_TRUE(write_controller.specs().size() == 1);
     write_controller.read();
     ASSERT_TRUE(write_controller.specs().size() == 1);
+}
+
+TEST(PluginSpecController, Context) {
+    PluginSpecController controller(configuration_file);
+
+    controller.read();
+    ASSERT_TRUE(controller.specs().size() == 1);
+    const PluginSpec &spec = controller.specs().at(0);
+    ASSERT_STREQ(spec.plugin_name.c_str(), "TestDynamic");
+    ASSERT_STREQ(spec.plugin_context->property("CreatedAt").c_str(), "2017-06-28T13:45:00.000+0000");
 }
