@@ -11,4 +11,16 @@ CREATE TABLE "processing"."user_module"(
   created_at    TIMESTAMP NOT NULL DEFAULT now()
 );
 
+DROP TABLE IF EXISTS "processing"."processing_module";
+CREATE TABLE "processing"."processing_module"(
+  id            BIGSERIAL NOT NULL PRIMARY KEY,
 
+  stream_input  TEXT NOT NULL,
+  stage         TEXT NOT NULL,
+  module_id     BIGINT NOT NULL REFERENCES "processing"."user_module"(id) ON DELETE RESTRICT,
+  table_name    TEXT NOT NULL,
+  complete_at   TIMESTAMP DEFAULT NULL,
+  created_at    TIMESTAMP NOT NULL DEFAULT now()
+);
+
+--INSERT INTO "processing"."processing_module"(stream_input, stage, module_id, table_name) VALUES() RETUNING id

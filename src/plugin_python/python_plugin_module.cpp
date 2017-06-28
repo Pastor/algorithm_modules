@@ -91,18 +91,18 @@ PythonScriptModule::execute(std::shared_ptr<ModuleContext> context) {
     return d->execute(context);
 }
 
-PythonFileScriptModule::PythonFileScriptModule(const std::string &file_name,
+PythonFileScriptModule::PythonFileScriptModule(const std::string &file_path,
                                                const std::string &name,
                                                const std::string &description,
                                                double version)
-        : ScriptModule(name, description, version) {
-    std::ifstream script(file_name, std::ios_base::in);
+        : ScriptModule(name, description, version, file_path) {
+    std::ifstream script(file_path, std::ios_base::in);
     if (script.is_open()) {
         auto content = std::string(std::istreambuf_iterator<char>(script), std::istreambuf_iterator<char>());
         d = std::shared_ptr<PythonScriptModule>(new PythonScriptModule(content, name, description, version));
         script.close();
     } else {
-        fprintf(stderr, "Script %s can't read\n", file_name.c_str());
+        fprintf(stderr, "[PythonFileScriptModule] Script %s can't read, error: %s\n", file_path.c_str(), strerror(errno));
     }
 }
 

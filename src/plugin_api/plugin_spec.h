@@ -35,6 +35,8 @@ struct API_LIBRARY_API PluginSpec final {
     ModuleStage plugin_stage = UnknownInput;
     std::shared_ptr<ModuleContext> plugin_context;
 
+    std::string plugin_stage_text() const;
+
     void toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) const;
     void fromXml(const tinyxml2::XMLElement *element);
 

@@ -27,5 +27,8 @@ TEST(PluginManager, Execute) {
 
     manager.load(configuration_file);
     ASSERT_TRUE(manager.contains("TestDynamic"));
-    manager.execute("TestDynamic", std::shared_ptr<ModuleContext>(new ModuleContext));
+    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
+
+    context->set_property(Constants::Stream_Input, "TestInputStream");
+    manager.execute("TestDynamic", context);
 }

@@ -16,15 +16,23 @@ TEST(PostgreSqlModule, Call) {
 }
 
 TEST(PostgreSqlModule, PluginManager) {
-    DynamicLibraryModule module("postgresql_module.dll");
     PluginManager manager;
 
-    manager.register_module(module.spec());
+    PluginSpec spec;
+    spec.plugin_file_path = "postgresql_module.dll";
+    spec.plugin_stage = PluginSpec::FirstInput;
+    spec.plugin_version = 1.02;
+    spec.plugin_name = "PostgreSqlModule";
+    spec.plugin_description = "Описание";
+    spec.plugin_type = PluginSpec::DynamicLibrary;
+
+    manager.register_module(spec);
     auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
     context->set_property(Constants::Database_Hostname, "localhost");
     context->set_property(Constants::Database_Database, "operational_db");
     context->set_property(Constants::Database_Username, "postgres");
     context->set_property(Constants::Database_Password, "123456");
     context->set_property(Constants::Database_Port, "5432");
-    manager.execute(module.spec().plugin_name, context);
+    context->set_property(Constants::Stream_Input, "TestInputStream");
+    manager.execute(spec.plugin_name, context);
 }

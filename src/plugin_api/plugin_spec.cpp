@@ -109,6 +109,11 @@ PluginSpec::is_valid() const {
     return !plugin_name.empty() && plugin_type != UnknownModule && plugin_version > 0.;
 }
 
+std::string
+PluginSpec::plugin_stage_text() const {
+    return to_stage(plugin_stage);
+}
+
 void
 PluginSpecController::write(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) {
     auto specs = document.NewElement("PluginSpecs");

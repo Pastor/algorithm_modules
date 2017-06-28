@@ -14,8 +14,11 @@ namespace Constants {
     const std::string Database_Schema = "Database.Connection.Schema";
     const std::string Database_Port = "Database.Connection.Port";
 
-    const std::string Database_Stream_In = "Database.Stream.In";
-    const std::string Database_Stream_Out = "Database.Stream.Out";
+    /**Входная таблица при вторичной обработки */
+    const std::string Database_Stream_Input = "Database.Stream.Input";
+    /**Выходная таблица */
+    const std::string Database_Stream_Output = "Database.Stream.Output";
+    /**Входной файл при первичной обработке */
     const std::string Stream_Input = "Stream.Input";
 }
 
@@ -63,7 +66,7 @@ class API_LIBRARY_API ScriptModule : public Module {
 public:
     ScriptModule(const PluginSpec &spec);
 
-    ScriptModule(const std::string name, const std::string &description, double version);
+    ScriptModule(const std::string name, const std::string &description, double version, const std::string &file_path = std::string());
 
     virtual ~ScriptModule() {}
 
