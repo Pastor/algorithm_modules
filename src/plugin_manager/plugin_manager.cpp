@@ -37,7 +37,8 @@ PluginManager::execute(const std::string &name, std::shared_ptr<ModuleContext> c
     auto &module = d->modules[name];
     if (module.is_valid()) {
         (*d->module_controller).execute(module, context);
-//        module.second->execute(context);
+    } else {
+        fprintf(stderr, "[PluginManager] Module %s not valid.\n", module.plugin_name.c_str());
     }
 }
 

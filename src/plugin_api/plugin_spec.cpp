@@ -22,6 +22,27 @@ to_type(PluginSpec::ModuleType type) {
     }
 }
 
+static PluginSpec::ModuleStage
+parse_stage(const char *type) {
+    if (type != nullptr && std::strcmp(type, "FirstInput") == 0)
+        return PluginSpec::FirstInput;
+    if (type != nullptr && std::strcmp(type, "ProcessingInput") == 0)
+        return PluginSpec::ProcessingInput;
+    return PluginSpec::UnknownInput;
+}
+
+static const char *
+to_stage(PluginSpec::ModuleStage type) {
+    switch (type) {
+        case PluginSpec::FirstInput:
+            return "FirstInput";
+        case PluginSpec::ProcessingInput:
+            return "ProcessingInput";
+        default:
+            return "UnknownInput";
+    }
+}
+
 static const char *
 child_element_value(const tinyxml2::XMLElement *element, const char *name) {
     auto child_element = element->FirstChildElement(name);
@@ -51,6 +72,8 @@ PluginSpec::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) c
     plugin_version_double->SetText(plugin_version);
     auto plugin_type_text = document.NewElement("Type");
     plugin_type_text->SetText(to_type(plugin_type));
+    auto plugin_stage_text = document.NewElement("Stage");
+    plugin_stage_text->SetText(to_stage(plugin_stage));
 
     if (plugin_context) {
         plugin_context->toXml(plugin_spec, document);
@@ -73,6 +96,7 @@ PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
     plugin_description = child_element_value(element, "Description");
     plugin_version = child_element_double(element, "Version");
     plugin_type = parse_type(child_element_value(element, "Type"));
+    plugin_stage = parse_stage(child_element_value(element, "Stage"));
     auto properties_xml = element->FirstChildElement("Properties");
     if (properties_xml != nullptr) {
         plugin_context.reset(new ModuleContext);

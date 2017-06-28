@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <plugin_manager.h>
-#include <dynamic_library_module.h>
 #include "tests.h"
 
 TEST(PluginManager, RegisterSpec) {
@@ -21,4 +20,12 @@ TEST(PluginManager, Load) {
 
     manager.load(configuration_file);
     ASSERT_TRUE(manager.contains("TestDynamic"));
+}
+
+TEST(PluginManager, Execute) {
+    PluginManager manager;
+
+    manager.load(configuration_file);
+    ASSERT_TRUE(manager.contains("TestDynamic"));
+    manager.execute("TestDynamic", std::shared_ptr<ModuleContext>(new ModuleContext));
 }

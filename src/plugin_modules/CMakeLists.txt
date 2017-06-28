@@ -31,7 +31,15 @@ file(COPY
         ${PostgreSQL_LIBRARY}/../../bin/libintl-8.dll
         DESTINATION
         ${CMAKE_BINARY_DIR})
-file(COPY
-        ${PostgreSQL_LIBRARY}/../../bin/libiconv-2.dll
-        DESTINATION
-        ${CMAKE_BINARY_DIR})
+
+if (${PostgreSQL_VERSION_STRING} STREQUAL "9.4")
+    file(COPY
+            ${PostgreSQL_LIBRARY}/../../bin/iconv.dll
+            DESTINATION
+            ${CMAKE_BINARY_DIR})
+else ()
+    file(COPY
+            ${PostgreSQL_LIBRARY}/../../bin/libiconv-2.dll
+            DESTINATION
+            ${CMAKE_BINARY_DIR})
+endif ()

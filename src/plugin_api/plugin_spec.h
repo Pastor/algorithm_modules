@@ -21,11 +21,18 @@ struct API_LIBRARY_API PluginSpec final {
         UnknownModule
     };
 
+    enum ModuleStage {
+        FirstInput = 1,
+        ProcessingInput = 2,
+        UnknownInput
+    };
+
     std::string plugin_file_path;
     std::string plugin_name;
     double plugin_version;
     std::string plugin_description;
     ModuleType plugin_type = UnknownModule;
+    ModuleStage plugin_stage = UnknownInput;
     std::shared_ptr<ModuleContext> plugin_context;
 
     void toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) const;

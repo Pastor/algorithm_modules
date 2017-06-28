@@ -11,6 +11,7 @@ namespace Constants {
     const std::string Database_Database = "Database.Connection.Database";
     const std::string Database_Username = "Database.Connection.Username";
     const std::string Database_Password = "Database.Connection.Password";
+    const std::string Database_Schema = "Database.Connection.Schema";
     const std::string Database_Port = "Database.Connection.Port";
 
     const std::string Database_Stream_In = "Database.Stream.In";
