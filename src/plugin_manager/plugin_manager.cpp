@@ -84,9 +84,10 @@ PluginManager::register_module(const PluginSpec &spec) {
 
 const PluginSpec &
 PluginManager::spec(const std::string &name) const {
+    static const PluginSpec empty = PluginSpec();
     const auto it = d->modules.find(name);
     if (it != d->modules.end() && it->second.is_valid())
         return (*it).second;
-    return PluginSpec();
+    return empty;
 }
 

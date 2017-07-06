@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+find_package(PythonInterp)
+
 if (MSVC)
     set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} /SUBSYSTEM:CONSOLE")
     if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -20,7 +22,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pedantic -Wp,-w")
     set(CMAKE_CFLAGS "${CMAKE_CFLAGS} -pedantic -Wp,-w")
 endif ()
-
+add_definitions(-DPythonInterpretator=${PYTHON_EXECUTABLE})
 include_directories(src)
 include_directories(src/plugin_api)
 include_directories(src/plugin_manager)
@@ -46,6 +48,7 @@ set(TESTS_SOURCE_FILES
         tests/plugin_spec_test.cpp
         tests/postgresql_module_test.cpp
         tests/sqlite_module_test.cpp
+        tests/system_process_module_test.cpp
         tests/module_manager_test.cpp)
 
 add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES})

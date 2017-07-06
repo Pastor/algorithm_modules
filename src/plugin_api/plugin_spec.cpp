@@ -3,10 +3,12 @@
 
 static PluginSpec::ModuleType
 parse_type(const std::string &type) {
-    if (!type.empty() && type == "DynamicLibrary")
+    if (type == "DynamicLibrary")
         return PluginSpec::DynamicLibrary;
-    if (!type.empty() && type == "PythonScript")
+    if (type == "PythonScript")
         return PluginSpec::PythonScript;
+    if (type == "SystemProcess")
+        return PluginSpec::SystemProcess;
     return PluginSpec::UnknownModule;
 }
 
@@ -17,6 +19,8 @@ to_type(PluginSpec::ModuleType type) {
             return "DynamicLibrary";
         case PluginSpec::PythonScript:
             return "PythonScript";
+        case PluginSpec::SystemProcess:
+            return "SystemProcess";
         default:
             return "UnknownModule";
     }

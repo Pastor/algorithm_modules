@@ -17,8 +17,8 @@ def main(context, name):
             max_ = len_
             name_ = param
     print("length(%s, %d)" % (name_, max_))
-    print("value (%s, %s)" % (name_, os.environ[name_]))
-    print("called(%s, %s)" % (context, name))
+    #print("value (%s, %s)" % (name_, os.environ[name_]))
+    #print("called(%s, %s)" % (context, name))
     return 0
 
 if __name__ == '__main__':

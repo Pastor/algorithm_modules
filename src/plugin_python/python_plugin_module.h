@@ -12,7 +12,7 @@
 
 struct PythonScriptModulePrivate;
 
-class PYTHON_LIBRARY_API PythonScriptModule final: public ScriptModule {
+class PYTHON_LIBRARY_API PythonScriptModule final: public DefaultModule {
 public:
     PythonScriptModule(const std::string &content,
                        const std::string &name = "unregistered",
@@ -25,7 +25,7 @@ private:
     std::shared_ptr<PythonScriptModulePrivate> d;
 };
 
-class PYTHON_LIBRARY_API PythonFileScriptModule: public ScriptModule {
+class PYTHON_LIBRARY_API PythonFileScriptModule: public DefaultModule {
 public:
     PythonFileScriptModule(const std::string &file_name,
                            const std::string &name = "unregistered",

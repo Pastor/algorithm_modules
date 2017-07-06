@@ -13,7 +13,9 @@
 
 #define _DEBUG
 #else
+
 #include <Python.h>
+
 #endif
 
 #include <python_plugin_module.h>
@@ -29,21 +31,19 @@ static bool start_plugin(PyObject *fun, std::shared_ptr<ModuleContext> context) 
         }
     }
     auto arg_name = PyString_FromFormat("PythonScriptModule");
+    auto ret = false;
     if (fun && PyCallable_Check(fun)) {
         /**TODO: https://docs.python.org/3.6/c-api/arg.html#c.Py_BuildValue */
         auto args = Py_BuildValue("OO", arg_context, arg_name);
-        Py_DecRef(arg_name);
-        Py_DecRef(arg_context);
         auto result = PyEval_CallObject(fun, args);
         fprintf(stdout, "Result: %d\n", _PyInt_AsInt(result));
         Py_DecRef(args);
         Py_DecRef(result);
-        return true;
-    } else {
-        Py_DecRef(arg_name);
-        Py_DecRef(arg_context);
+        ret = true;
     }
-    return false;
+    Py_DecRef(arg_name);
+    Py_DecRef(arg_context);
+    return ret;
 }
 
 static bool execute(const std::string content, std::shared_ptr<ModuleContext> context) {
@@ -67,11 +67,27 @@ struct PythonScriptModulePrivate final {
 
     bool execute(std::shared_ptr<ModuleContext> context) {
         bool ret;
+#if 0
         //Py_BEGIN_ALLOW_THREADS
         auto state = PyGILState_Ensure();
         ret = ::execute(_content, context);
         PyGILState_Release(state);
         //Py_END_ALLOW_THREADS
+#else
+        Py_BEGIN_ALLOW_THREADS
+            PyEval_AcquireLock();
+            auto iter = Py_NewInterpreter();
+            PyEval_ReleaseThread(iter);
+
+            PyEval_AcquireThread(iter);
+            ret = ::execute(_content, context);
+            PyEval_ReleaseThread(iter);
+
+            PyEval_AcquireThread(iter);
+            Py_EndInterpreter(iter);
+            PyEval_ReleaseLock();
+        Py_END_ALLOW_THREADS
+#endif
         return ret;
     }
 
@@ -83,7 +99,7 @@ PythonScriptModule::PythonScriptModule(const std::string &content,
                                        const std::string &name,
                                        const std::string &description,
                                        double version)
-        : ScriptModule(name, description, version), d(new PythonScriptModulePrivate(content)) {
+        : DefaultModule(PluginSpec::PythonScript, name, description, version), d(new PythonScriptModulePrivate(content)) {
     if (!Py_IsInitialized()) {
         Py_Initialize();
         PyEval_InitThreads();
@@ -103,14 +119,15 @@ PythonFileScriptModule::PythonFileScriptModule(const std::string &file_path,
                                                const std::string &name,
                                                const std::string &description,
                                                double version)
-        : ScriptModule(name, description, version, file_path) {
+        : DefaultModule(PluginSpec::PythonScript, name, description, version, file_path) {
     std::ifstream script(file_path, std::ios_base::in);
     if (script.is_open()) {
         auto content = std::string(std::istreambuf_iterator<char>(script), std::istreambuf_iterator<char>());
         d = std::shared_ptr<PythonScriptModule>(new PythonScriptModule(content, name, description, version));
         script.close();
     } else {
-        fprintf(stderr, "[PythonFileScriptModule] Script %s can't read, error: %s\n", file_path.c_str(), strerror(errno));
+        fprintf(stderr, "[PythonFileScriptModule] Script %s can't read, error: %s\n", file_path.c_str(),
+                strerror(errno));
     }
 }
 

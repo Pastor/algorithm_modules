@@ -20,6 +20,11 @@ namespace Constants {
     const std::string Database_Stream_Output = "Database.Stream.Output";
     /**Входной файл при первичной обработке */
     const std::string Stream_Input = "Stream.Input";
+    /**Помещать Environment вызывающего процесса */
+    const std::string SystemProcessModule_PutEnvironment = "Module.SystemProcess.Put_Environment";
+
+    /** Debug */
+    const std::string Debug_ModuleLevel = "Debug.Module_Level";
 }
 
 class API_LIBRARY_API ModuleContext {
@@ -62,13 +67,17 @@ public:
     virtual bool execute(std::shared_ptr<ModuleContext> context) = 0;
 };
 
-class API_LIBRARY_API ScriptModule : public Module {
+class API_LIBRARY_API DefaultModule : public Module {
 public:
-    ScriptModule(const PluginSpec &spec);
+    DefaultModule(const PluginSpec &spec);
 
-    ScriptModule(const std::string name, const std::string &description, double version, const std::string &file_path = std::string());
+    DefaultModule(PluginSpec::ModuleType type,
+                 const std::string name,
+                 const std::string &description,
+                 double version,
+                 const std::string &file_path = std::string());
 
-    virtual ~ScriptModule() {}
+    virtual ~DefaultModule() {}
 
     virtual const PluginSpec &spec() const {
         return _spec;

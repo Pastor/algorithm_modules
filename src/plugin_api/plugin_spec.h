@@ -18,6 +18,7 @@ struct API_LIBRARY_API PluginSpec final {
     enum ModuleType {
         DynamicLibrary,
         PythonScript,
+        SystemProcess,
         UnknownModule
     };
 
