@@ -2,6 +2,7 @@
 #include <plugin_api.h>
 #include <plugin_manager.h>
 #include <dynamic_library_module.h>
+#include "tests.h"
 
 TEST(PostgreSqlModule, Call) {
     DynamicLibraryModule module("postgresql_module.dll");
@@ -16,7 +17,9 @@ TEST(PostgreSqlModule, Call) {
 }
 
 TEST(PostgreSqlModule, PluginManager) {
+    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
     PluginManager manager;
+    manager.load(configuration_file);
 
     PluginSpec spec;
     spec.plugin_file_path = "postgresql_module.dll";
@@ -27,12 +30,6 @@ TEST(PostgreSqlModule, PluginManager) {
     spec.plugin_type = PluginSpec::DynamicLibrary;
 
     manager.register_module(spec);
-    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
-    context->set_property(Constants::Database_Hostname, "localhost");
-    context->set_property(Constants::Database_Database, "operational_db");
-    context->set_property(Constants::Database_Username, "testing");
-    context->set_property(Constants::Database_Password, "testing");
-    context->set_property(Constants::Database_Port, "5432");
-    context->set_property(Constants::Stream_Input, "TestInputStream");
+
     manager.execute(spec.plugin_name, context);
 }

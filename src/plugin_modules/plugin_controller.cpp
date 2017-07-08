@@ -1,236 +1,12 @@
 #include <memory>
 #include <thread>
 #include <tinyxml2.h>
-#include <libpq-fe.h>
 #include <dynamic_library_module.h>
 #include <algorithm>
 #include <python_plugin_module.h>
-#include <windows.h>
+#include <system_process_module.h>
 #include "plugin_controller.h"
-
-#pragma comment(lib, "Rpcrt4.lib")
-
-class ControllerService {
-public:
-    ControllerService(const PluginSpec &spec, std::shared_ptr<ModuleContext> context) : c(nullptr) {
-        const auto &hostname = context->property(Constants::Database_Hostname);
-        const auto &database = context->property(Constants::Database_Database);
-        const auto &username = context->property(Constants::Database_Username);
-        const auto &password = context->property(Constants::Database_Password);
-        const auto &port = context->property(Constants::Database_Port);
-        c = PQsetdbLogin(hostname.c_str(), port.c_str(), "", "", database.c_str(), username.c_str(), password.c_str());
-
-        module_name = __module_name(spec);
-        user_name = std::string("Module_") + module_name;
-        schema_name = std::string("Module_") + module_name;
-    }
-
-    ~ControllerService() {
-        if (c != nullptr) {
-            PQfinish(c);
-        }
-        c = nullptr;
-    }
-
-    std::string __module_name(const PluginSpec &spec) const {
-        static char buffer[20];
-        sprintf(buffer, "%02.2f", spec.plugin_version);
-        return std::string("v") + buffer + std::string("_") + spec.plugin_name;
-    }
-
-    bool is_user_exists(const std::string &user_name_text = std::string()) {
-        auto ret = false;
-        auto error = true;
-        std::string temp_user_name = user_name_text;
-        if (temp_user_name.empty())
-            temp_user_name = user_name;
-        auto result = PQexec(c, (std::string("SELECT 1 FROM pg_roles WHERE rolname = '") +
-                                 temp_user_name + (std::string("'"))).c_str());
-        if (PQresultStatus(result) == PGRES_TUPLES_OK) {
-            if (PQntuples(result) > 0) {
-                auto n = PQgetvalue(result, 0, 0);
-                ret = std::strtol(n, nullptr, 10) > 0;
-            } else {
-                error = false;
-            }
-        }
-        if (!ret && error) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-        }
-        PQclear(result);
-        user_exists = ret;
-        return ret;
-    }
-
-    bool create_user() {
-        bool ret = false;
-
-        generate_uuid(user_password);
-        auto result = PQexec(c,
-                             (std::string("CREATE USER \"") + user_name +
-                              std::string("\" WITH PASSWORD '") + user_password +
-                              std::string("'")).c_str());
-        if (PQresultStatus(result) == PGRES_COMMAND_OK) {
-            ret = true;
-        }
-        if (!ret) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-        }
-        PQclear(result);
-
-        result = PQexec(c, (std::string(
-                "INSERT INTO \"processing\".\"user_module\"(\"user_name\", \"user_password\", \"schema_name\") VALUES('") +
-                            user_name + std::string("', '") +
-                            user_password + std::string("', '") +
-                            schema_name + std::string("') RETURNING id")).c_str());
-        if (PQresultStatus(result) == PGRES_TUPLES_OK) {
-            if (PQntuples(result) > 0) {
-                module_id = PQgetvalue(result, 0, 0);
-                ret = true;
-            }
-        }
-        if (!ret) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-        }
-        PQclear(result);
-
-        if (ret) {
-            result = PQexec(c,
-                            (std::string("CREATE SCHEMA IF NOT EXISTS \"") + schema_name +
-                             std::string("\" AUTHORIZATION \"") + user_name + std::string("\"")).c_str());
-            if (PQresultStatus(result) == PGRES_COMMAND_OK) {
-                ret = true;
-                user_exists = true;
-            }
-        }
-        if (!ret) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-        }
-        PQclear(result);
-        return ret;
-    }
-
-    bool update_password() {
-        auto ret = false;
-        auto result = PQexec(c,
-                             (std::string(
-                                     "SELECT id, user_password FROM \"processing\".\"user_module\" WHERE user_name = '") +
-                              user_name + std::string("'")).c_str());
-        if (PQresultStatus(result) == PGRES_TUPLES_OK) {
-            if (PQntuples(result) > 0) {
-                user_password = PQgetvalue(result, 0, 1);
-                module_id = PQgetvalue(result, 0, 0);
-                ret = true;
-            }
-        }
-        if (!ret) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-        }
-        user_exists = ret;
-        PQclear(result);
-        return ret;
-    }
-
-    bool update_complete() {
-        bool ret = false;
-        auto result = PQexec(c,
-                             (std::string(
-                                     "UPDATE \"processing\".\"processing_module\" SET complete_at = now() WHERE id = ")
-                              + processing_module_id).c_str());
-        if (PQresultStatus(result) == PGRES_COMMAND_OK) {
-            ret = true;
-        }
-        if (!ret) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-            output_table = "";
-        }
-        PQclear(result);
-        return ret;
-    }
-
-    bool create_output_table(const std::string &stream_input, const std::string &stage) {
-        bool ret = false;
-
-        generate_uuid(output_table);
-        auto result = PQexec(c,
-                             (std::string("CREATE TABLE \"") + schema_name + std::string("\".\"") +
-                              output_table + std::string("\"(") +
-                              std::string("   id          BIGSERIAL NOT NULL PRIMARY KEY, ") +
-                              std::string("   created_at  TIMESTAMP NOT NULL DEFAULT now() ") +
-                              std::string(")")).c_str());
-        if (PQresultStatus(result) == PGRES_COMMAND_OK) {
-            ret = true;
-        }
-        if (!ret) {
-            fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-            output_table = "";
-        }
-        PQclear(result);
-        if (ret) {
-            ret = false;
-            result = PQexec(c,
-                            (std::string("ALTER TABLE \"") + schema_name + std::string("\".") +
-                             std::string("\"") + output_table + std::string("\" OWNER TO ") +
-                             std::string("\"") + user_name + std::string("\"")).c_str());
-            if (PQresultStatus(result) == PGRES_COMMAND_OK) {
-                ret = true;
-            }
-            if (!ret) {
-                fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-                output_table = "";
-            }
-            PQclear(result);
-        }
-        if (ret) {
-            ret = false;
-            result = PQexec(c, (std::string(
-                    "INSERT INTO \"processing\".\"processing_module\"(stream_input, stage, module_id, table_name) VALUES(")
-                                + std::string("'") + stream_input + std::string("', ")
-                                + std::string("'") + stage + std::string("', ")
-                                + std::string("'") + module_id + std::string("', ")
-                                + std::string("'") + output_table + std::string("'")
-                                + std::string(") RETURNING id")).c_str());
-            if (PQresultStatus(result) == PGRES_TUPLES_OK) {
-                if (PQntuples(result) > 0) {
-                    processing_module_id = PQgetvalue(result, 0, 0);
-                    ret = true;
-                }
-            }
-            if (!ret) {
-                fprintf(stderr, "[ModuleController] Error: %s\n", PQresultErrorMessage(result));
-                output_table = "";
-            }
-            PQclear(result);
-        }
-        return ret;
-    }
-
-    void generate_uuid(std::string &uuid_text) const {
-        UUID uuid;
-        if (UuidCreate(&uuid) == RPC_S_OK) {
-            LPCSTR result_uuid;
-            UuidToStringA(&uuid, (RPC_CSTR *) &result_uuid);
-            uuid_text = std::string(result_uuid);
-            RpcStringFreeA((RPC_CSTR *) &result_uuid);
-            std::transform(uuid_text.begin(), uuid_text.end(), uuid_text.begin(), ::toupper);
-        }
-    }
-
-    operator bool() {
-        return c != nullptr && PQstatus(c) == CONNECTION_OK;
-    }
-
-    std::string user_name;
-    std::string schema_name;
-    std::string module_name;
-    std::string module_id;
-    std::string processing_module_id;
-    std::string user_password;
-    std::string output_table;
-    bool user_exists = false;
-private:
-    PGconn *c;
-};
+#include "plugin_controller_service.h"
 
 static std::shared_ptr<Module>
 load_from_spec(const PluginSpec &spec) {
@@ -241,16 +17,21 @@ load_from_spec(const PluginSpec &spec) {
             return std::shared_ptr<Module>(
                     new PythonFileScriptModule(
                             spec.plugin_file_path, spec.plugin_name, spec.plugin_description, spec.plugin_version));
+        case PluginSpec::SystemProcess:
+            return std::shared_ptr<Module>(
+                    new SystemProcessModule(
+                            spec.plugin_file_path, spec.plugin_name, spec.plugin_description, spec.plugin_version)
+            );
         default:
             return std::shared_ptr<Module>(nullptr);
     }
 }
 
 static void
-module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> context) {
+module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> context, std::shared_ptr<BaseConnection> c) {
     auto module = load_from_spec(spec);
     if (module) {
-        ControllerService service(spec, context);
+        ControllerService service(spec, c);
 
         fprintf(stdout, "[ModuleController] Module %s loaded successful\n", spec.plugin_name.c_str());
         if (service) {
@@ -290,15 +71,29 @@ module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> context) {
     }
 }
 
+struct ModuleControllerPrivate {
+    ModuleControllerPrivate(const std::shared_ptr<ModuleContext> &context)
+            : c(new BaseConnection(context)) {
+
+    }
+
+    std::shared_ptr<BaseConnection> c;
+};
+
 void
 ModuleController::execute(const PluginSpec &spec, std::shared_ptr<ModuleContext> context) {
     if (spec.is_valid() && context) {
-        std::shared_ptr<ModuleContext> module_context(_context);
+        std::shared_ptr<ModuleContext> module_context(d->c->copy_context());
         context->copy_to(*module_context);
         if (spec.plugin_context) {
             spec.plugin_context->copy_to(*module_context);
         }
-        std::thread caller(module_call, spec, module_context);
+        if (!d->c->is_connected()) {
+            auto ret = d->c->reconnect();
+            fprintf(stdout, "[ModuleController] BaseConnection not connected. Try connection: %s\n",
+                    ret ? "true" : "false");
+        }
+        std::thread caller(module_call, spec, module_context, d->c);
         caller.join();
     } else {
         fprintf(stderr, "[ModuleController] Module %s not valid or invalid context.\n", spec.plugin_name.c_str());
@@ -306,7 +101,7 @@ ModuleController::execute(const PluginSpec &spec, std::shared_ptr<ModuleContext>
 }
 
 ModuleController::ModuleController(const std::shared_ptr<ModuleContext> &context)
-        : _context(context) {}
+        : d(new ModuleControllerPrivate(context)) {}
 
 void
 ModuleController::load(const std::string &file_path) {
@@ -322,7 +117,7 @@ ModuleController::load(const std::string &file_path) {
             continue;
         fprintf(stdout, "ModuleController. Name: %s\n", element->Name());
         if (std::strcmp(element->Name(), "Properties") == 0) {
-            _context->fromXml(element);
+            d->c->load_context(element);
         }
     }
 }

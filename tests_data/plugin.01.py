@@ -8,15 +8,15 @@ class Context:
 
 
 def main(context, name):
-    print("cwd : %s" % os.getcwd())
-    max_ = 0
-    name_ = ""
-    for param in os.environ.keys():
-        len_ = len(os.environ[param])
-        if len_ > max_:
-            max_ = len_
-            name_ = param
-    print("length(%s, %d)" % (name_, max_))
+    #print("cwd : %s" % os.getcwd())
+    #max_ = 0
+    #name_ = ""
+    #for param in os.environ.keys():
+    #    len_ = len(os.environ[param])
+    #    if len_ > max_:
+    #        max_ = len_
+     #       name_ = param
+    #print("length(%s, %d)" % (name_, max_))
     #print("value (%s, %s)" % (name_, os.environ[name_]))
     #print("called(%s, %s)" % (context, name))
     return 0

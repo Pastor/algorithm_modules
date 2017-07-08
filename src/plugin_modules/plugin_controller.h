@@ -3,8 +3,10 @@
 #include <plugin_api.h>
 #include <sql_module.h>
 
+struct ModuleControllerPrivate;
+
 class MODULE_LIBRARY_API ModuleController final {
-    std::shared_ptr<ModuleContext>    _context;
+    std::shared_ptr<ModuleControllerPrivate> d;
 public:
     ModuleController(const std::shared_ptr<ModuleContext> &context);
 

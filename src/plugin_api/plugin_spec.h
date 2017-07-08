@@ -36,6 +36,7 @@ struct API_LIBRARY_API PluginSpec final {
     ModuleStage plugin_stage = UnknownInput;
     std::shared_ptr<ModuleContext> plugin_context;
     std::string plugin_input_stream;
+    double      plugin_input_stream_version;
 
     std::string plugin_stage_text() const;
     std::string plugin_type_text() const;

@@ -14,7 +14,7 @@ message(STATUS "PostgreSQL: ${PostgreSQL_VERSION_STRING}")
 
 set(POSTGRESQL_SOURCE_FILES postgresql_module.cpp sql_module.cpp)
 set(SQLITE_SOURCE_FILES sqlite_module.cpp sql_module.cpp)
-set(CONTROLLER_SOURCE_FILES plugin_controller.cpp)
+set(CONTROLLER_SOURCE_FILES plugin_controller.cpp plugin_controller_service.cpp)
 
 add_library(postgresql_module SHARED ${POSTGRESQL_SOURCE_FILES})
 add_library(sqlite_module SHARED ${SQLITE_SOURCE_FILES})

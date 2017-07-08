@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <plugin_api.h>
 #include <system_process_module.h>
+#include <plugin_manager.h>
 #include "tests.h"
 
 #ifndef PythonInterpretator
@@ -27,4 +28,21 @@ TEST(SystemProcessModule, ExecuteWithPutEnvironment) {
     context->set_property("Name", "SystemProcessModule");
     context->set_property(Constants::SystemProcessModule_PutEnvironment, "true");
     ASSERT_TRUE(module.execute(context));
+}
+
+TEST(SystemProcessModule, PluginManager) {
+    PluginManager manager;
+
+    manager.load(configuration_file);
+    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    PluginSpec spec;
+    spec.plugin_file_path = STRINGIFY(PythonInterpretator) " --version";
+    spec.plugin_stage = PluginSpec::FirstInput;
+    spec.plugin_version = 1.02;
+    spec.plugin_name = "SystemProcessModule";
+    spec.plugin_description = "Описание";
+    spec.plugin_type = PluginSpec::SystemProcess;
+
+    manager.register_module(spec);
+    manager.execute(spec.plugin_name, context);
 }

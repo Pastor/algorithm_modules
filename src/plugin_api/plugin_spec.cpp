@@ -63,6 +63,14 @@ child_element_double(const tinyxml2::XMLElement *element, const char *name) {
     return child_element->DoubleText(0.0);
 }
 
+static double
+child_attribute_double(const tinyxml2::XMLElement *element, const char *name, const char *attribute) {
+    auto child_element = element->FirstChildElement(name);
+    if (child_element == nullptr)
+        return 0.0;
+    return child_element->DoubleAttribute(attribute, 0.0);
+}
+
 void
 PluginSpec::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) const {
     auto plugin_spec = document.NewElement("PluginSpec");
@@ -81,6 +89,11 @@ PluginSpec::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) c
     if (!plugin_input_stream.empty()) {
         auto input_stream_text = document.NewElement("InputStream");
         input_stream_text->SetText(plugin_input_stream.c_str());
+        if (plugin_input_stream_version > 0) {
+            input_stream_text->SetAttribute("Version", plugin_input_stream_version);
+        } else {
+            input_stream_text->SetAttribute("Version", plugin_version);
+        }
     }
 
     if (plugin_context) {
@@ -106,6 +119,7 @@ PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
     plugin_type = parse_type(child_element_value(element, "Type"));
     plugin_stage = parse_stage(child_element_value(element, "Stage"));
     plugin_input_stream = child_element_value(element, "InputStream");
+    plugin_input_stream_version = child_attribute_double(element, "InputStream", "Version");
     auto properties_xml = element->FirstChildElement("Properties");
     if (properties_xml != nullptr) {
         plugin_context.reset(new ModuleContext);

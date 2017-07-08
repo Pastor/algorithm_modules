@@ -29,6 +29,7 @@ include_directories(src/plugin_manager)
 include_directories(src/plugin_modules)
 include_directories(src/plugin_python)
 include_directories(src/plugin_common)
+include_directories(src/plugin_model)
 include_directories(lib/sqlite)
 include_directories(lib/tinyxml2)
 include_directories(lib/googletest/googletest/include)
@@ -39,6 +40,8 @@ add_subdirectory(src/plugin_manager)
 add_subdirectory(src/plugin_modules)
 add_subdirectory(src/plugin_python)
 add_subdirectory(src/plugin_common)
+add_subdirectory(src/plugin_model)
+add_subdirectory(src/plugin_app)
 
 set(ALGORITHM_SOURCE_FILES src/plugin_app/main.cpp)
 set(TESTS_SOURCE_FILES
@@ -49,14 +52,12 @@ set(TESTS_SOURCE_FILES
         tests/postgresql_module_test.cpp
         tests/sqlite_module_test.cpp
         tests/system_process_module_test.cpp
+        tests/loading_modules_test.cpp
+        tests/test_main.cpp
         tests/module_manager_test.cpp)
 
-add_executable(${PROJECT_NAME} ${ALGORITHM_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} plugin_api plugin_manager plugin_common)
-
 add_executable(${PROJECT_NAME}_tests ${TESTS_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME}_tests gtest gtest_main
-        plugin_api plugin_python plugin_manager plugin_common)
+target_link_libraries(${PROJECT_NAME}_tests gtest plugin_api plugin_python plugin_manager plugin_common plugin_model)
 
 add_library(dynamic_module_library SHARED tests/dynamic_module_library.cpp)
 target_link_libraries(dynamic_module_library plugin_api)

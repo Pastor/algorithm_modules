@@ -9,7 +9,7 @@
     </Properties>
     <PluginSpecs>
         <PluginSpec>
-            <Name>TestDynamic</Name>
+            <Name>DynamicLibraryModule</Name>
             <FilePath>dynamic_module_library.dll</FilePath>
             <Description>Динамическая библиотека(тестовая)</Description>
             <Version>1.02</Version>
@@ -20,6 +20,17 @@
             </Properties>
         </PluginSpec>
         <PluginSpec>
+            <Name>SystemProcessModule</Name>
+            <FilePath>C:/Python27/python.exe --version</FilePath>
+            <Description>Вызов системного процесса(тестовый)</Description>
+            <Version>1.02</Version>
+            <Type>SystemProcess</Type>
+            <Stage>FirstInput</Stage>
+            <Properties>
+                <CreatedAt>2017-06-28T13:47:00.000+0000</CreatedAt>
+            </Properties>
+        </PluginSpec>
+        <PluginSpec>
             <Name>PythonModule</Name>
             <FilePath>tests_data/plugin.01.py</FilePath>
             <Description>Преобразрвания</Description>
@@ -27,7 +38,7 @@
             <Type>PythonScript</Type>
             <Stage>ProcessingInput</Stage>
             <!-- Имя модуля, с которого можно получать данные -->
-            <InputStream>TestDynamic</InputStream>
+            <InputStream Version="1.02">TestDynamic</InputStream>
             <Properties>
                 <CreatedAt>2017-06-28T13:46:00.000+0000</CreatedAt>
             </Properties>

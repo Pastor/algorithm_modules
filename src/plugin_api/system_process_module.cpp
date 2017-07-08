@@ -30,6 +30,10 @@ static char * parse_environment(std::shared_ptr<ModuleContext> context) {
             }
         }
     }
+
+    if (current_environment != nullptr)
+        FreeEnvironmentStrings(current_environment);
+
     for (auto it = context->entries().begin(); it != context->entries().end(); ++it) {
         environment[std::string("CONTEXT_") + it->first] = it->second;
     }
