@@ -11,11 +11,9 @@ SystemProcessModule::SystemProcessModule(const std::string &file_path, const std
 
 }
 
-SystemProcessModule::~SystemProcessModule() {
+SystemProcessModule::~SystemProcessModule() = default;
 
-}
-
-static char * parse_environment(std::shared_ptr<ModuleContext> context) {
+static char * parse_environment(const std::shared_ptr<ModuleContext> &context) {
     auto current_environment = GetEnvironmentStrings();
     std::map<std::string, std::string> environment;
 
@@ -48,8 +46,8 @@ static char * parse_environment(std::shared_ptr<ModuleContext> context) {
 
 bool
 SystemProcessModule::execute(std::shared_ptr<ModuleContext> context) {
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
+    STARTUPINFO si{};
+    PROCESS_INFORMATION pi{};
     bool ret;
 
     ZeroMemory(&si, sizeof(si));

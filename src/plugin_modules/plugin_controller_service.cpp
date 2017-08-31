@@ -81,8 +81,7 @@ ControllerService::ControllerService(const PluginSpec &spec, std::shared_ptr<Bas
     schema_name = std::string("Module_") + module_name;
 }
 
-ControllerService::~ControllerService() {
-}
+ControllerService::~ControllerService() = default;
 
 std::string
 ControllerService::__module_name(const PluginSpec &spec) const {
@@ -133,7 +132,7 @@ ControllerService::create_user() {
     PQclear(result);
 
     result = c->execute(std::string(
-            "INSERT INTO \"processing\".\"user_module\"(\"user_name\", \"user_password\", \"schema_name\") VALUES('") +
+            R"(INSERT INTO "processing"."user_module"("user_name", "user_password", "schema_name") VALUES(')") +
                         user_name + std::string("', '") +
                         user_password + std::string("', '") +
                         schema_name + std::string("') RETURNING id"));
@@ -167,7 +166,7 @@ bool
 ControllerService::update_password() {
     auto ret = false;
     auto result = c->execute(std::string(
-            "SELECT id, user_password FROM \"processing\".\"user_module\" WHERE user_name = '") +
+            R"(SELECT id, user_password FROM "processing"."user_module" WHERE user_name = ')") +
                              user_name + std::string("'"));
     if (PQresultStatus(result) == PGRES_TUPLES_OK) {
         if (PQntuples(result) > 0) {
@@ -188,7 +187,7 @@ bool
 ControllerService::update_complete() {
     bool ret = false;
     auto result = c->execute(std::string(
-            "UPDATE \"processing\".\"processing_module\" SET complete_at = now() WHERE id = ")
+            R"(UPDATE "processing"."processing_module" SET complete_at = now() WHERE id = )")
                              + processing_module_id);
     if (PQresultStatus(result) == PGRES_COMMAND_OK) {
         ret = true;
@@ -236,7 +235,7 @@ ControllerService::create_output_table(const std::string &stream_input, const st
     if (ret) {
         ret = false;
         result = c->execute(std::string(
-                "INSERT INTO \"processing\".\"processing_module\"(stream_input, stage, module_id, table_name) VALUES(")
+                R"(INSERT INTO "processing"."processing_module"(stream_input, stage, module_id, table_name) VALUES()")
                             + std::string("'") + stream_input + std::string("', ")
                             + std::string("'") + stage + std::string("', ")
                             + std::string("'") + module_id + std::string("', ")
@@ -259,7 +258,7 @@ ControllerService::create_output_table(const std::string &stream_input, const st
 
 void
 ControllerService::generate_uuid(std::string &uuid_text) const {
-    UUID uuid;
+    UUID uuid{};
     if (UuidCreate(&uuid) == RPC_S_OK) {
         LPCSTR result_uuid;
         UuidToStringA(&uuid, (RPC_CSTR *) &result_uuid);

@@ -3,25 +3,25 @@
 #include <python_plugin_module.h>
 #include "tests.h"
 
-const std::string script_file_path = "tests_data/plugin.01.py";
+static const std::string script_file_path = "tests_data/plugin.01.py";
 
 TEST(PythonModule, ScriptModule) {
     PythonScriptModule module(std::string("def main(context, name):\n    return 0"));
 
-    const auto &context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    const auto &context = std::make_shared<ModuleContext>();
     ASSERT_TRUE(module.execute(context));
 }
 
 TEST(PythonModule, FileModule) {
     PythonFileScriptModule module(script_file_path);
 
-    const auto &context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    const auto &context = std::make_shared<ModuleContext>();
     context->set_property("key", "value");
     ASSERT_TRUE(module.execute(context));
 }
 
 TEST(PythonModule, /*DISABLED_*/PluginManager) {
-    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    auto context = std::make_shared<ModuleContext>();
     PluginManager manager;
 
     manager.load(configuration_file);

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(plugin_context)
+project(plugin_modules)
 
 find_package(PostgreSQL REQUIRED)
 
@@ -35,6 +35,19 @@ file(COPY
 if (${PostgreSQL_VERSION_STRING} STREQUAL "9.4.0")
     file(COPY
             ${PostgreSQL_LIBRARY}/../../bin/iconv.dll
+            DESTINATION
+            ${CMAKE_BINARY_DIR})
+elseif (${PostgreSQL_VERSION_STRING} STREQUAL "9.6.0")
+    file(COPY
+            ${PostgreSQL_LIBRARY}/../../bin/libiconv-2.dll
+            DESTINATION
+            ${CMAKE_BINARY_DIR})
+    file(COPY
+            ${PostgreSQL_LIBRARY}/../../bin/ssleay32.dll
+            DESTINATION
+            ${CMAKE_BINARY_DIR})
+    file(COPY
+            ${PostgreSQL_LIBRARY}/../../bin/libeay32.dll
             DESTINATION
             ${CMAKE_BINARY_DIR})
 else ()

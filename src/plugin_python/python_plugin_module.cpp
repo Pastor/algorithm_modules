@@ -20,7 +20,7 @@
 
 #include <python_plugin_module.h>
 
-static bool start_plugin(PyObject *fun, std::shared_ptr<ModuleContext> context) {
+static bool start_plugin(PyObject *fun, const std::shared_ptr<ModuleContext> &context) {
     auto arg_context = PyDict_New();
     if (context) {
         const auto &prop = context->entries();
@@ -46,7 +46,7 @@ static bool start_plugin(PyObject *fun, std::shared_ptr<ModuleContext> context) 
     return ret;
 }
 
-static bool execute(const std::string content, std::shared_ptr<ModuleContext> context) {
+static bool execute(const std::string &content, std::shared_ptr<ModuleContext> context) {
     auto compiled_fun = Py_CompileString(content.c_str(), "", Py_file_input);
     auto compiled_module = PyImport_ExecCodeModule(const_cast<char *>(std::string("plugin").c_str()), compiled_fun);
     {
@@ -63,9 +63,9 @@ static bool execute(const std::string content, std::shared_ptr<ModuleContext> co
 }
 
 struct PythonScriptModulePrivate final {
-    PythonScriptModulePrivate(const std::string &content) : _content(content) {}
+    explicit PythonScriptModulePrivate(const std::string &content) : _content(content) {}
 
-    bool execute(std::shared_ptr<ModuleContext> context) {
+    bool execute(const std::shared_ptr<ModuleContext> &context) {
         bool ret;
 #if 0
         //Py_BEGIN_ALLOW_THREADS
@@ -123,7 +123,7 @@ PythonFileScriptModule::PythonFileScriptModule(const std::string &file_path,
     std::ifstream script(file_path, std::ios_base::in);
     if (script.is_open()) {
         auto content = std::string(std::istreambuf_iterator<char>(script), std::istreambuf_iterator<char>());
-        d = std::shared_ptr<PythonScriptModule>(new PythonScriptModule(content, name, description, version));
+        d = std::make_shared<PythonScriptModule>(content, name, description, version);
         script.close();
     } else {
         fprintf(stderr, "[PythonFileScriptModule] Script %s can't read, error: %s\n", file_path.c_str(),
@@ -131,9 +131,7 @@ PythonFileScriptModule::PythonFileScriptModule(const std::string &file_path,
     }
 }
 
-PythonFileScriptModule::~PythonFileScriptModule() {
-
-}
+PythonFileScriptModule::~PythonFileScriptModule() = default;
 
 bool
 PythonFileScriptModule::execute(std::shared_ptr<ModuleContext> context) {

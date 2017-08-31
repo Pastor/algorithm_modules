@@ -2,7 +2,7 @@
 <Configuration>
     <Properties>
         <Database.Connection.Hostname>localhost</Database.Connection.Hostname>
-        <Database.Connection.Database>operational_db</Database.Connection.Database>
+        <Database.Connection.Database>testing</Database.Connection.Database>
         <Database.Connection.Username>testing</Database.Connection.Username>
         <Database.Connection.Password>testing</Database.Connection.Password>
         <Database.Connection.Port>5432</Database.Connection.Port>
@@ -21,7 +21,7 @@
         </PluginSpec>
         <PluginSpec>
             <Name>SystemProcessModule</Name>
-            <FilePath>C:/Python27/python.exe --version</FilePath>
+            <FilePath>D:/Python27/python.exe --version</FilePath>
             <Description>Вызов системного процесса(тестовый)</Description>
             <Version>1.02</Version>
             <Type>SystemProcess</Type>

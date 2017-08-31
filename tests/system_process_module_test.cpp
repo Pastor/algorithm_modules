@@ -14,7 +14,7 @@
 TEST(SystemProcessModule, Execute) {
     SystemProcessModule module(STRINGIFY(PythonInterpretator) " --version", "name", "description", 1.02);
 
-    const auto &context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    const auto &context = std::make_shared<ModuleContext>();
     context->set_property("Version", "1.02");
     context->set_property("Name", "SystemProcessModule");
     ASSERT_TRUE(module.execute(context));
@@ -23,7 +23,7 @@ TEST(SystemProcessModule, Execute) {
 TEST(SystemProcessModule, ExecuteWithPutEnvironment) {
     SystemProcessModule module(STRINGIFY(PythonInterpretator) " --version", "name", "description", 1.02);
 
-    const auto &context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    const auto &context = std::make_shared<ModuleContext>();
     context->set_property("Version", "1.02");
     context->set_property("Name", "SystemProcessModule");
     context->set_property(Constants::SystemProcessModule_PutEnvironment, "true");
@@ -34,7 +34,7 @@ TEST(SystemProcessModule, PluginManager) {
     PluginManager manager;
 
     manager.load(configuration_file);
-    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    auto context = std::make_shared<ModuleContext>();
     PluginSpec spec;
     spec.plugin_file_path = STRINGIFY(PythonInterpretator) " --version";
     spec.plugin_stage = PluginSpec::FirstInput;

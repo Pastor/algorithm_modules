@@ -10,7 +10,8 @@ plugin_call(ModuleContext *context) {
     const auto &port = context->property(Constants::Database_Port);
     bool ret = false;
 
-    fprintf(stdout, "[PostgreSqlModule] Try connect to database by user %s.\n", username.c_str());
+    fprintf(stdout, "[PostgreSqlModule] Try connect to database. cs %s@%s:%s.\n",
+            username.c_str(), hostname.c_str(), port.c_str());
     auto c = PQsetdbLogin(hostname.c_str(), port.c_str(), "", "", database.c_str(), username.c_str(), password.c_str());
     if (c != nullptr) {
         if (PQstatus(c) == CONNECTION_OK) {

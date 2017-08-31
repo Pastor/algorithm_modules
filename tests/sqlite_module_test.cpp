@@ -11,7 +11,7 @@ TEST(SqliteModule, Call) {
 }
 
 TEST(SqliteModule, PluginManager) {
-    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    auto context = std::make_shared<ModuleContext>();
     PluginManager manager;
     manager.load(configuration_file);
     PluginSpec spec;

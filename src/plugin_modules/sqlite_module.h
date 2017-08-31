@@ -5,7 +5,7 @@
 #include <sql_module.h>
 
 extern "C" {
-bool MODULE_LIBRARY_API plugin_call(ModuleContext *context);
+bool MODULE_LIBRARY_API plugin_call(const ModuleContext *context);
 MODULE_LIBRARY_API const char *plugin_name();
 double MODULE_LIBRARY_API plugin_version();
 PluginSpec::ModuleType MODULE_LIBRARY_API plugin_type();

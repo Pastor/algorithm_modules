@@ -28,7 +28,7 @@ load_from_spec(const PluginSpec &spec) {
 }
 
 static void
-module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> context, std::shared_ptr<BaseConnection> c) {
+module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> &context, std::shared_ptr<BaseConnection> c) {
     auto module = load_from_spec(spec);
     if (module) {
         ControllerService service(spec, c);
@@ -71,8 +71,8 @@ module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> context, std:
     }
 }
 
-struct ModuleControllerPrivate {
-    ModuleControllerPrivate(const std::shared_ptr<ModuleContext> &context)
+struct ModuleControllerPrivate final {
+    explicit ModuleControllerPrivate(const std::shared_ptr<ModuleContext> &context)
             : c(new BaseConnection(context)) {
 
     }
@@ -111,7 +111,7 @@ ModuleController::load(const std::string &file_path) {
     const auto configuration_xml = document.FirstChildElement("Configuration");
     if (configuration_xml == nullptr)
         return;
-    for (auto node = configuration_xml->FirstChild(); node; node = node->NextSibling()) {
+    for (auto node = configuration_xml->FirstChild(); node != nullptr; node = node->NextSibling()) {
         const auto element = node->ToElement();
         if (element == nullptr)
             continue;

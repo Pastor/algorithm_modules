@@ -1,7 +1,7 @@
-DROP SCHEMA "processing";
+DROP SCHEMA "processing" CASCADE;
 CREATE SCHEMA "processing";
 
-DROP TABLE IF EXISTS "processing"."user_module";
+DROP TABLE IF EXISTS "processing"."user_module" CASCADE;
 CREATE TABLE "processing"."user_module"(
   id            BIGSERIAL NOT NULL PRIMARY KEY,
 
@@ -11,7 +11,7 @@ CREATE TABLE "processing"."user_module"(
   created_at    TIMESTAMP NOT NULL DEFAULT now()
 );
 
-DROP TABLE IF EXISTS "processing"."processing_module";
+DROP TABLE IF EXISTS "processing"."processing_module" CASCADE;
 CREATE TABLE "processing"."processing_module"(
   id            BIGSERIAL NOT NULL PRIMARY KEY,
 
@@ -22,5 +22,15 @@ CREATE TABLE "processing"."processing_module"(
   complete_at   TIMESTAMP DEFAULT NULL,
   created_at    TIMESTAMP NOT NULL DEFAULT now()
 );
+DROP SCHEMA "Module_v1.02_DynamicLibraryModule" CASCADE;
+DROP SCHEMA "Module_v1.02_PostgreSqlModule" CASCADE;
+DROP SCHEMA "Module_v1.02_PythonModule" CASCADE;
+DROP SCHEMA "Module_v1.02_SqliteModule" CASCADE;
+DROP SCHEMA "Module_v1.02_SystemProcessModule" CASCADE;
 
+DROP USER IF EXISTS "Module_v1.02_DynamicLibraryModule";
+DROP USER IF EXISTS "Module_v1.02_PostgreSqlModule";
+DROP USER IF EXISTS "Module_v1.02_PythonModule";
+DROP USER IF EXISTS "Module_v1.02_SqliteModule";
+DROP USER IF EXISTS "Module_v1.02_SystemProcessModule";
 --INSERT INTO "processing"."processing_module"(stream_input, stage, module_id, table_name) VALUES() RETURNING id

@@ -10,7 +10,7 @@ typedef PluginSpec::ModuleType (__stdcall *plugin_type_fun)();
 }
 
 struct DynamicLibraryModulePrivate {
-    DynamicLibraryModulePrivate(const std::string &library_path)
+    explicit DynamicLibraryModulePrivate(const std::string &library_path)
             : h_library(LoadLibraryA(library_path.c_str())) {
         if (is_loaded()) {
             plugin_name = (plugin_name_fun)GetProcAddress(h_library, "plugin_name");
@@ -27,6 +27,10 @@ struct DynamicLibraryModulePrivate {
             _spec.plugin_stage = plugin_stage != nullptr ? (*plugin_stage)() : PluginSpec::UnknownInput;
         }
     }
+    DynamicLibraryModulePrivate() = delete;
+    DynamicLibraryModulePrivate(const DynamicLibraryModulePrivate &) = delete;
+    DynamicLibraryModulePrivate(const DynamicLibraryModulePrivate &&) = delete;
+    DynamicLibraryModulePrivate &operator=(const DynamicLibraryModulePrivate &) = delete;
 
     ~DynamicLibraryModulePrivate() {
         if (h_library != nullptr)
@@ -49,7 +53,7 @@ struct DynamicLibraryModulePrivate {
         return plugin_version == nullptr ? 0.0 : (*plugin_version)();
     }
 
-    bool execute(std::shared_ptr<ModuleContext> context) {
+    bool execute(const std::shared_ptr<ModuleContext> &context) {
         if (plugin_call != nullptr && context) {
             return (*plugin_call)(context.get());
         } else {
@@ -78,7 +82,7 @@ DynamicLibraryModule::DynamicLibraryModule(const std::string &library_path)
 
 }
 
-DynamicLibraryModule::~DynamicLibraryModule() {}
+DynamicLibraryModule::~DynamicLibraryModule() = default;
 
 bool
 DynamicLibraryModule::execute(std::shared_ptr<ModuleContext> context) {

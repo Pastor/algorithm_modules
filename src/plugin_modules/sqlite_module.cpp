@@ -3,7 +3,7 @@
 #include <sqlite3.h>
 
 bool
-plugin_call(ModuleContext *context) {
+plugin_call(const ModuleContext *context) {
     sqlite3 *c;
 
     if (sqlite3_open(":memory:", &c) == 0) {

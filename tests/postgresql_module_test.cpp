@@ -7,17 +7,17 @@
 TEST(PostgreSqlModule, Call) {
     DynamicLibraryModule module("postgresql_module.dll");
 
-    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
-    context->set_property(Constants::Database_Hostname, "localhost");
-    context->set_property(Constants::Database_Database, "operational_db");
-    context->set_property(Constants::Database_Username, "testing");
-    context->set_property(Constants::Database_Password, "testing");
-    context->set_property(Constants::Database_Port, "5432");
+    auto context = std::make_shared<ModuleContext>();
+    context->set_property(Constants::Database_Hostname, TEST_DATABASE_HOSTNAME);
+    context->set_property(Constants::Database_Database, TEST_DATABASE_DATABASE);
+    context->set_property(Constants::Database_Username, TEST_DATABASE_USERNAME);
+    context->set_property(Constants::Database_Password, TEST_DATABASE_PASSWORD);
+    context->set_property(Constants::Database_Port, TEST_DATABASE_PORT);
     ASSERT_TRUE(module.execute(context));
 }
 
 TEST(PostgreSqlModule, PluginManager) {
-    auto context = std::shared_ptr<ModuleContext>(new ModuleContext);
+    auto context = std::make_shared<ModuleContext>();
     PluginManager manager;
     manager.load(configuration_file);
 
