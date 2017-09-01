@@ -4,11 +4,11 @@
 #include <dynamic_library_module.h>
 #include <plugin_controller.h>
 
-struct PluginManagerPrivate {
+struct PluginManagerPrivate final {
     std::map<std::string, PluginSpec> modules;
     std::unique_ptr<ModuleController> module_controller;
 
-    PluginManagerPrivate(std::shared_ptr<ModuleContext> context)
+    PluginManagerPrivate(const std::shared_ptr<ModuleContext> &context)
             : module_controller(new ModuleController(context)) {}
 };
 
@@ -33,7 +33,7 @@ PluginManager::register_script(const std::string &name,
 }
 
 void
-PluginManager::execute(const std::string &name, std::shared_ptr<ModuleContext> context) {
+PluginManager::execute(const std::string &name, const std::shared_ptr<ModuleContext> &context) {
     auto &module = d->modules[name];
     if (module.is_valid()) {
         (*d->module_controller).execute(module, context);
@@ -48,7 +48,7 @@ PluginManager::PluginManager(std::shared_ptr<ModuleContext> context)
 }
 
 PluginManager::PluginManager()
-        : d(new PluginManagerPrivate(std::shared_ptr<ModuleContext>(new ModuleContext))){
+        : d(new PluginManagerPrivate(std::make_shared<ModuleContext>())){
 
 }
 

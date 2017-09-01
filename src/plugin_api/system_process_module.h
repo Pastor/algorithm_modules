@@ -14,7 +14,7 @@ public:
                         double version);
     virtual ~SystemProcessModule();
 
-    bool execute(std::shared_ptr<ModuleContext> context) override ;
+    bool execute(const std::shared_ptr<ModuleContext> &context) override ;
 private:
     std::shared_ptr<SystemProcessModulePrivate> d;
 };

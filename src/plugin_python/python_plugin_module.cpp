@@ -111,7 +111,7 @@ PythonScriptModule::~PythonScriptModule() {
 }
 
 bool
-PythonScriptModule::execute(std::shared_ptr<ModuleContext> context) {
+PythonScriptModule::execute(const std::shared_ptr<ModuleContext> &context) {
     return d->execute(context);
 }
 
@@ -134,6 +134,6 @@ PythonFileScriptModule::PythonFileScriptModule(const std::string &file_path,
 PythonFileScriptModule::~PythonFileScriptModule() = default;
 
 bool
-PythonFileScriptModule::execute(std::shared_ptr<ModuleContext> context) {
+PythonFileScriptModule::execute(const std::shared_ptr<ModuleContext> &context) {
     return d ? d->execute(context) : false;
 }

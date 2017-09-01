@@ -26,7 +26,7 @@ public:
     void register_script(const std::string &name, const std::string &description,
                          double version, const std::string &file_name);
 
-    void execute(const std::string &name, std::shared_ptr<ModuleContext> context);
+    void execute(const std::string &name, const std::shared_ptr<ModuleContext> &context);
     bool contains(const std::string &name) const;
     const PluginSpec &spec(const std::string &name) const;
 private:

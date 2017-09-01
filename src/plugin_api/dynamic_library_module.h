@@ -11,7 +11,7 @@ public:
     DynamicLibraryModule(const std::string &library_path);
     virtual ~DynamicLibraryModule();
 
-    bool execute(std::shared_ptr<ModuleContext> context) override ;
+    bool execute(const std::shared_ptr<ModuleContext> &context) override ;
     bool is_loaded() const;
 
     virtual const PluginSpec &spec() const;

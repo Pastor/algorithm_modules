@@ -20,7 +20,7 @@ public:
                        double version = 0.0);
     ~PythonScriptModule();
 
-    bool execute(std::shared_ptr<ModuleContext> context) override;
+    bool execute(const std::shared_ptr<ModuleContext> &context) override;
 private:
     std::shared_ptr<PythonScriptModulePrivate> d;
 };
@@ -33,7 +33,7 @@ public:
                            double version = 0.0);
     ~PythonFileScriptModule();
 
-    bool execute(std::shared_ptr<ModuleContext> context) override;
+    bool execute(const std::shared_ptr<ModuleContext> &context) override;
 private:
     std::shared_ptr<PythonScriptModule> d;
 };

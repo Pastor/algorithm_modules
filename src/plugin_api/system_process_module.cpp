@@ -45,10 +45,11 @@ static char * parse_environment(const std::shared_ptr<ModuleContext> &context) {
 }
 
 bool
-SystemProcessModule::execute(std::shared_ptr<ModuleContext> context) {
+SystemProcessModule::execute(const std::shared_ptr<ModuleContext> &context) {
     STARTUPINFO si{};
     PROCESS_INFORMATION pi{};
     bool ret;
+    char *environment;
 
     ZeroMemory(&si, sizeof(si));
     ZeroMemory(&pi, sizeof(pi));

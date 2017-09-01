@@ -33,7 +33,7 @@ class API_LIBRARY_API ModuleContext {
 public:
     ModuleContext();
 
-    ModuleContext(std::shared_ptr<ModuleContext> parent);
+    ModuleContext(const std::shared_ptr<ModuleContext> &parent);
 
     virtual ~ModuleContext() {}
 
@@ -64,7 +64,7 @@ public:
 
     virtual const PluginSpec &spec() const = 0;
 
-    virtual bool execute(std::shared_ptr<ModuleContext> context) = 0;
+    virtual bool execute(const std::shared_ptr<ModuleContext> &context) = 0;
 };
 
 class API_LIBRARY_API DefaultModule : public Module {

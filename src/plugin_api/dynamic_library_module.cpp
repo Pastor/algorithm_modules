@@ -9,7 +9,7 @@ typedef PluginSpec::ModuleStage (__stdcall *plugin_stage_fun)();
 typedef PluginSpec::ModuleType (__stdcall *plugin_type_fun)();
 }
 
-struct DynamicLibraryModulePrivate {
+struct DynamicLibraryModulePrivate final {
     explicit DynamicLibraryModulePrivate(const std::string &library_path)
             : h_library(LoadLibraryA(library_path.c_str())) {
         if (is_loaded()) {
@@ -56,9 +56,8 @@ struct DynamicLibraryModulePrivate {
     bool execute(const std::shared_ptr<ModuleContext> &context) {
         if (plugin_call != nullptr && context) {
             return (*plugin_call)(context.get());
-        } else {
-            fprintf(stdout, "Plugin.Call not found in library\n");
         }
+        fprintf(stdout, "Plugin.Call not found in library\n");
         return false;
     }
 
@@ -85,7 +84,7 @@ DynamicLibraryModule::DynamicLibraryModule(const std::string &library_path)
 DynamicLibraryModule::~DynamicLibraryModule() = default;
 
 bool
-DynamicLibraryModule::execute(std::shared_ptr<ModuleContext> context) {
+DynamicLibraryModule::execute(const std::shared_ptr<ModuleContext> &context) {
     return d->execute(context);
 }
 

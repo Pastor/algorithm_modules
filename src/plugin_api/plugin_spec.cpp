@@ -110,7 +110,7 @@ PluginSpec::toXml(tinyxml2::XMLElement *root, tinyxml2::XMLDocument &document) c
 
 void
 PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
-    if (std::strcmp(element->Name(), "PluginSpec"))
+    if (std::strcmp(element->Name(), "PluginSpec") != 0)
         return;
     plugin_name = child_element_value(element, "Name");
     plugin_file_path = child_element_value(element, "FilePath");
@@ -122,7 +122,7 @@ PluginSpec::fromXml(const tinyxml2::XMLElement *element) {
     plugin_input_stream_version = child_attribute_double(element, "InputStream", "Version");
     auto properties_xml = element->FirstChildElement("Properties");
     if (properties_xml != nullptr) {
-        plugin_context.reset(new ModuleContext);
+        plugin_context = std::make_shared<ModuleContext>();
         plugin_context->fromXml(properties_xml);
     }
 }
@@ -186,7 +186,7 @@ PluginSpecController::read(const tinyxml2::XMLDocument &document) {
     if (specs == nullptr)
         return;
     for (auto plugin_spec = specs->FirstChildElement("PluginSpec");
-         plugin_spec;
+         plugin_spec != nullptr;
          plugin_spec = plugin_spec->NextSiblingElement("PluginSpec")) {
         PluginSpec spec;
 
