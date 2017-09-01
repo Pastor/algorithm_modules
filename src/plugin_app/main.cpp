@@ -10,5 +10,5 @@ main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
     PythonFileScriptModule module(argv[1]);
-    return module.execute(std::shared_ptr<ModuleContext>(new ModuleContext));
+    return module.execute(std::make_shared<ModuleContext>()) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

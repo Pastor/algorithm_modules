@@ -28,7 +28,7 @@ load_from_spec(const PluginSpec &spec) {
 }
 
 static void
-module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> &context, std::shared_ptr<BaseConnection> c) {
+module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> &context, std::shared_ptr<BaseConnection> &c) {
     auto module = load_from_spec(spec);
     if (module) {
         ControllerService service(spec, c);

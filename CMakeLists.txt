@@ -74,6 +74,10 @@ file(COPY
         DESTINATION
         ${CMAKE_BINARY_DIR}/tests_data)
 file(COPY
+        ${CMAKE_SOURCE_DIR}/tests_data/plugin.02.py
+        DESTINATION
+        ${CMAKE_BINARY_DIR}/tests_data)
+file(COPY
         ${CMAKE_SOURCE_DIR}/tests_data/configuration.xml
         DESTINATION
         ${CMAKE_BINARY_DIR}/tests_data)
