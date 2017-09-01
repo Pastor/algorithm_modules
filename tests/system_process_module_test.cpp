@@ -46,3 +46,21 @@ TEST(SystemProcessModule, PluginManager) {
     manager.register_module(spec);
     manager.execute(spec.plugin_name, context);
 }
+
+TEST(SystemProcessModule, PluginManagerEcho) {
+    PluginManager manager;
+
+    manager.load(configuration_file);
+    auto context = std::make_shared<ModuleContext>();
+    PluginSpec spec;
+    spec.plugin_file_path = TEST_ECHO_SCRIPT;
+    spec.plugin_stage = PluginSpec::FirstInput;
+    spec.plugin_version = 1.02;
+    spec.plugin_name = "SystemProcessModule";
+    spec.plugin_description = "Проверка передачи environment";
+    spec.plugin_type = PluginSpec::SystemProcess;
+
+    context->set_property(Constants::SystemProcessModule_PutEnvironment, "true");
+    manager.register_module(spec);
+    manager.execute(spec.plugin_name, context);
+}

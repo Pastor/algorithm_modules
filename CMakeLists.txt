@@ -30,6 +30,7 @@ add_definitions(-DTEST_DATABASE_USERNAME="testing")
 add_definitions(-DTEST_DATABASE_DATABASE="testing")
 add_definitions(-DTEST_DATABASE_PASSWORD="testing")
 add_definitions(-DTEST_DATABASE_PORT="5432")
+add_definitions(-DTEST_ECHO_SCRIPT="${CMAKE_BINARY_DIR}/tests_data/echo.bat")
 include_directories(src)
 include_directories(src/plugin_api)
 include_directories(src/plugin_manager)
@@ -75,6 +76,10 @@ file(COPY
         ${CMAKE_BINARY_DIR}/tests_data)
 file(COPY
         ${CMAKE_SOURCE_DIR}/tests_data/plugin.02.py
+        DESTINATION
+        ${CMAKE_BINARY_DIR}/tests_data)
+file(COPY
+        ${CMAKE_SOURCE_DIR}/tests_data/echo.bat
         DESTINATION
         ${CMAKE_BINARY_DIR}/tests_data)
 file(COPY

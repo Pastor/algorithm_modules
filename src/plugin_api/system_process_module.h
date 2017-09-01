@@ -15,6 +15,7 @@ public:
     virtual ~SystemProcessModule();
 
     bool execute(const std::shared_ptr<ModuleContext> &context) override ;
+    static char * parse_environment(const std::shared_ptr<ModuleContext> &context);
 private:
     std::shared_ptr<SystemProcessModulePrivate> d;
 };
