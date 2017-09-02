@@ -42,7 +42,7 @@ PluginManager::execute(const std::string &name, const std::shared_ptr<ModuleCont
     }
 }
 
-PluginManager::PluginManager(std::shared_ptr<ModuleContext> context)
+PluginManager::PluginManager(const std::shared_ptr<ModuleContext> &context)
         : d(new PluginManagerPrivate(context)) {
 
 }
@@ -89,5 +89,14 @@ PluginManager::spec(const std::string &name) const {
     if (it != d->modules.end() && it->second.is_valid())
         return (*it).second;
     return empty;
+}
+
+const std::vector<PluginSpec>
+PluginManager::list_spec() const {
+    std::vector<PluginSpec> specs;
+    for (auto &it: d->modules) {
+        specs.push_back(it.second);
+    }
+    return specs;
 }
 

@@ -7,6 +7,8 @@ CREATE TABLE "processing"."user_module"(
 
   user_name     TEXT NOT NULL,
   schema_name   TEXT NOT NULL,
+  module_name    TEXT NOT NULL,
+  module_version TEXT NOT NULL,
   user_password TEXT NOT NULL,
   created_at    TIMESTAMP NOT NULL DEFAULT now()
 );
@@ -19,6 +21,7 @@ CREATE TABLE "processing"."processing_module"(
   stage         TEXT NOT NULL,
   module_id     BIGINT NOT NULL REFERENCES "processing"."user_module"(id) ON DELETE RESTRICT,
   table_name    TEXT NOT NULL,
+  status        TEXT NOT NULL DEFAULT 'STARTING',
   complete_at   TIMESTAMP DEFAULT NULL,
   created_at    TIMESTAMP NOT NULL DEFAULT now()
 );

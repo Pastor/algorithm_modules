@@ -16,7 +16,7 @@ struct PluginManagerPrivate;
 
 class MANAGER_LIBRARY_API PluginManager {
 public:
-    PluginManager(std::shared_ptr<ModuleContext> context);
+    PluginManager(const std::shared_ptr<ModuleContext> &context);
     PluginManager();
 
     void load(const std::string &file_name);
@@ -29,6 +29,7 @@ public:
     void execute(const std::string &name, const std::shared_ptr<ModuleContext> &context);
     bool contains(const std::string &name) const;
     const PluginSpec &spec(const std::string &name) const;
+    const std::vector<PluginSpec> list_spec() const;
 private:
     std::shared_ptr<PluginManagerPrivate> d;
 };

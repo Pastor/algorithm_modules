@@ -34,7 +34,18 @@ private:
     PGconn *_c;
 };
 
-
+/*
+ * Список задач
+ SELECT
+   pm.table_name,
+   pm.status,
+   um.user_name,
+   um.schema_name
+ FROM
+   "processing"."processing_module" pm
+   LEFT JOIN "processing"."user_module" um
+     ON pm.module_id = um.id;
+ */
 struct ControllerService final {
 public:
     ControllerService(const PluginSpec &spec, std::shared_ptr<BaseConnection> &c);
@@ -45,13 +56,13 @@ public:
 
     bool is_user_exists(const std::string &user_name_text = std::string());
 
-    bool create_user();
+    bool create_user(const PluginSpec &spec);
 
     bool update_password();
 
-    bool update_complete();
+    bool update_complete(bool success);
 
-    bool create_output_table(const std::string &stream_input, const std::string &stage);
+    bool register_module_processing(const PluginSpec &spec, const std::string &stream_input, const std::string &stage);
 
     void generate_uuid(std::string &uuid_text) const;
 

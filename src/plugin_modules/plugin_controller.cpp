@@ -38,7 +38,7 @@ module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> &context, std
             const auto user_name_text = service.user_name;
             if (!service.is_user_exists()) {
                 fprintf(stdout, "[ModuleController] User %s not exists\n", user_name_text.c_str());
-                if (service.create_user()) {
+                if (service.create_user(spec)) {
                     fprintf(stdout, "[ModuleController] User %s created\n", user_name_text.c_str());
                 } else {
                     fprintf(stderr, "[ModuleController] User %s can't create\n", user_name_text.c_str());
@@ -57,10 +57,10 @@ module_call(const PluginSpec &spec, std::shared_ptr<ModuleContext> &context, std
                 if (spec.plugin_stage == PluginSpec::FirstInput)
                     stream_input = context->property(Constants::Stream_Input);
                 const auto stage = spec.plugin_stage_text();
-                if (service.create_output_table(stream_input, stage)) {
+                if (service.register_module_processing(spec, stream_input, stage)) {
                     context->set_property(Constants::Database_Stream_Output, service.output_table);
-                    module->execute(context);
-                    service.update_complete();
+                    auto ret = module->execute(context);
+                    service.update_complete(ret);
                 }
             }
         } else {
@@ -94,7 +94,11 @@ ModuleController::execute(const PluginSpec &spec, std::shared_ptr<ModuleContext>
                     ret ? "true" : "false");
         }
         std::thread caller(module_call, spec, module_context, d->c);
+#if ENABLE_WAIT_THREAD_COMPLETE
         caller.join();
+#else
+        caller.detach();
+#endif
     } else {
         fprintf(stderr, "[ModuleController] Module %s not valid or invalid context.\n", spec.plugin_name.c_str());
     }

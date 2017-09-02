@@ -116,7 +116,7 @@ ControllerService::is_user_exists(const std::string &user_name_text) {
 }
 
 bool
-ControllerService::create_user() {
+ControllerService::create_user(const PluginSpec &spec) {
     bool ret = false;
 
     generate_uuid(user_password);
@@ -132,9 +132,11 @@ ControllerService::create_user() {
     PQclear(result);
 
     result = c->execute(std::string(
-            R"(INSERT INTO "processing"."user_module"("user_name", "user_password", "schema_name") VALUES(')") +
+            R"(INSERT INTO "processing"."user_module"("user_name", "user_password", "module_name", "module_version", "schema_name") VALUES(')") +
                         user_name + std::string("', '") +
                         user_password + std::string("', '") +
+                        spec.plugin_name + std::string("', '") +
+                        std::to_string(spec.plugin_version) + std::string("', '") +
                         schema_name + std::string("') RETURNING id"));
     if (PQresultStatus(result) == PGRES_TUPLES_OK) {
         if (PQntuples(result) > 0) {
@@ -184,11 +186,13 @@ ControllerService::update_password() {
 }
 
 bool
-ControllerService::update_complete() {
+ControllerService::update_complete(bool success) {
     bool ret = false;
-    auto result = c->execute(std::string(
-            R"(UPDATE "processing"."processing_module" SET complete_at = now() WHERE id = )")
-                             + processing_module_id);
+
+    auto sql = std::string(R"(UPDATE "processing"."processing_module" SET complete_at = now(), status = ')") +
+               std::string((success ? "SUCCESS" : "FAILURE")) + std::string("' WHERE id = ") + processing_module_id;
+
+    auto result = c->execute(sql);
     if (PQresultStatus(result) == PGRES_COMMAND_OK) {
         ret = true;
     }
@@ -201,7 +205,9 @@ ControllerService::update_complete() {
 }
 
 bool
-ControllerService::create_output_table(const std::string &stream_input, const std::string &stage) {
+ControllerService::register_module_processing(const PluginSpec &spec,
+                                              const std::string &stream_input,
+                                              const std::string &stage) {
     bool ret = false;
 
     generate_uuid(output_table);
